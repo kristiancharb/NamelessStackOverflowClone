@@ -60,7 +60,8 @@ def login():
             clientResponse.set_cookie('sessionId', response.json()['sessionId'])
             return clientResponse
     else:
-        return jsonify({'status':'OK'})
+        return render_template('login.html')
+
 
 @app.route("/logout", methods=['POST','GET'])
 def logout():
