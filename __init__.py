@@ -1,6 +1,6 @@
 from flask import (Flask, make_response, request,send_from_directory,render_template,jsonify)
 import requests
-app = Flask(__name__)
+app = Flask(__name__, template_folder='./static/build', static_folder='./static/build/static')
 postfixServer = 'http://130.245.171.187'
 userAccountDB = 'http://130.245.169.94'
 
@@ -13,7 +13,7 @@ def getUserId(sessionId):
 
 @app.route("/")
 def hello():
-    return "Hello, Flask app is up!"
+    return render_template('index.html')
 
 @app.route("/adduser", methods=['GET', 'POST']) 
 def addUser():
