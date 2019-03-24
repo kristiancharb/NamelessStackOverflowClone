@@ -2,7 +2,6 @@
 *.swp
 *.git
 
-
 # dependencies
 static/node_modules
 static/.pnp
