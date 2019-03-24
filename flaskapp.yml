@@ -1,0 +1,48 @@
+---
+- hosts: hw1
+  gather_facts: False
+  sudo: yes
+  vars: 
+    domain: 149.28.48.15
+      
+  tasks:
+  - name: install python setuptools
+    raw: apt install -y python-setuptools
+  - name: install python 2 minimal
+    raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+  - name: install apache2
+    apt: name=apache2 update_cache=yes state=latest
+  - name: install wsgi
+    apt: name=libapache2-mod-wsgi update_cache=yes state=latest
+  - name: install python-dev
+    apt: name=python-dev update_cache=yes state=latest
+  - name: enable mod_wsgi
+    raw: a2enmod wsgi
+  - name: install pip
+    apt: name=python-pip update_cache=yes state=latest
+  - name: install Flask
+    pip: name=Flask 
+  - name: install requests
+    pip: name=requests 
+  - name: configure virtual host
+    template:
+      src: FlaskApp.conf
+      dest: /etc/apache2/sites-available/FlaskApp.conf
+  - name: create directory path
+    file:
+      path: /var/www/FlaskApp/FlaskApp
+      state: directory
+  - name: create Flask App
+    template:
+      src: __init__.py
+      dest: /var/www/FlaskApp/FlaskApp/__init__.py
+  - name: create wsgi
+    template:
+      src: flaskapp.wsgi
+      dest: /var/www/FlaskApp/flaskapp.wsgi
+  - name: a2ensite FlaskApp
+    command: a2ensite FlaskApp
+  - name: restart apache
+    raw: service apache2 restart 
+
+
