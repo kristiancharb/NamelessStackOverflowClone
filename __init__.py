@@ -1,8 +1,12 @@
 from flask import (Flask, make_response, request,send_from_directory,render_template,jsonify)
 import requests
 app = Flask(__name__)
-postfixServer = 'http://130.245.171.187'
-userAccountDB = 'http://130.245.169.94'
+#openstack
+#postfixServer = 'http://130.245.171.187'
+#userAccountDB = 'http://130.245.169.94'
+#vulture
+postfixServer = 'http://104.207.133.129'
+userAccountDB = 'http://149.28.40.50'
 
 def getUserId(sessionId):
     response = requests.post(userAccountDB+'/getUserId', json={'sessionId':sessionId})

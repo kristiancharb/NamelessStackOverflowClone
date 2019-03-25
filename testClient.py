@@ -3,9 +3,12 @@ import requests
 from __init__ import getUserId
 
 #clientServer = 'http://localhost:5000'
+#open stack
 #clientServer = 'http://130.245.171.193'
+#userAccountDB = 'http://130.245.169.94'
+#vulture
 clientServer = 'http://149.28.48.15'
-userAccountDB = 'http://130.245.169.94'
+userAccountDB = 'http://149.28.40.50'
 
 class TestClientServer(unittest.TestCase):
     def testClientServerUp(self):
