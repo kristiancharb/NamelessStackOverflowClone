@@ -16,6 +16,10 @@
     apt: name=libapache2-mod-wsgi update_cache=yes state=latest
   - name: install python-dev
     apt: name=python-dev update_cache=yes state=latest
+  - name: install node
+    apt: name=nodejs update_cache=yes state=latest
+  - name: install npm
+    apt: name=npm update_cache=yes state=latest
   - name: enable mod_wsgi
     raw: a2enmod wsgi
   - name: install pip
@@ -32,10 +36,25 @@
     file:
       path: /var/www/FlaskApp/FlaskApp
       state: directory
+  - name: create directory path for react app
+    file:
+      path: /var/www/FlaskApp/FlaskApp/static
+      state: directory
   - name: create Flask App
     template:
       src: __init__.py
       dest: /var/www/FlaskApp/FlaskApp/__init__.py
+  - name: copy react app
+    synchronize:
+      src: ./static
+      dest: /var/www/FlaskApp/FlaskApp
+  - name: Install packages based on package.json.
+    npm:
+      path: /var/www/FlaskApp/FlaskApp/static
+  - name: Build react app
+    shell: npm run build
+    args:
+      chdir: /var/www/FlaskApp/FlaskApp/static
   - name: create wsgi
     template:
       src: flaskapp.wsgi
