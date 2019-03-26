@@ -21,23 +21,29 @@ const styles = {
     },
 };
 
-function ButtonAppBar(props) {
-    const { classes } = props;
-    return (
-        <div className={classes.root}>
-            <AppBar position="static">
-                <Toolbar>
-                    {/* <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
-            <MenuIcon />
-          </IconButton> */}
-                <Typography variant="h6" color="inherit" className={classes.grow}>
-                    Questions
-                </Typography>
-                    <Button color="inherit">Login</Button>
-                </Toolbar>
-            </AppBar>
-        </div>
-    );
+class ButtonAppBar extends React.Component {
+    constructor (props) {
+        super(props);
+        this.navigate = props.navigate;
+    }
+    render() {
+        const { classes } = this.props;
+        return (
+            <div className={classes.root}>
+                <AppBar position="static">
+                    <Toolbar>
+                        {/* <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+                <MenuIcon />
+            </IconButton> */}
+                    <Typography variant="h6" color="inherit" className={classes.grow}>
+                        <Button color="inherit" onClick={() => {this.navigate('questions');}}>Questions</Button>
+                    </Typography>
+                        <Button color="inherit" onClick={() => {this.navigate('login');}}>Login</Button>
+                    </Toolbar>
+                </AppBar>
+            </div>
+        );
+    }
 }
 
 ButtonAppBar.propTypes = {
