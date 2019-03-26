@@ -17,7 +17,7 @@ def getUserId(sessionId):
 
 @app.route("/")
 def hello():
-    return "Hello, Flask app is up!"
+    return render_template('index.html')
 
 @app.route("/adduser", methods=['GET', 'POST']) 
 def addUser():
