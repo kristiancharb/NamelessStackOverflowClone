@@ -44,7 +44,7 @@ def verify():
         if not request.json:
             abort(400)
         email = request.json['email']
-        key = request.json['verificationCode']
+        key = request.json['key']
         response = requests.post(userAccountDB+'/verify', json={'key': key, 'email': email})
         if(response.json()['status']=='OK'):
             return jsonify({'status':'OK'}),201
