@@ -15,7 +15,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import {Error, errorStyle} from './error';
 import $ from 'jquery';
 
-const signInStyles = theme => ({
+const verifyStyles = theme => ({
     main: {
         width: 400,
         display: 'block', // Fix IE 11 issue.
@@ -47,7 +47,7 @@ const signInStyles = theme => ({
     },
 });
 
-class SignIn extends React.Component {
+class Verify extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
@@ -76,16 +76,16 @@ class SignIn extends React.Component {
                     <Avatar className={classes.avatar}>
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        Sign in
+                        Verify Account
                     </Typography>
                     <form className={classes.form} id={"login"}>
                         <FormControl margin="normal" required fullWidth>
-                            <InputLabel htmlFor="username">Username</InputLabel>
-                            <Input id="username" name="username" autoComplete="username" autoFocus/>
+                            <InputLabel htmlFor="email">Email</InputLabel>
+                            <Input id="email" name="email" autoComplete="email" autoFocus/>
                         </FormControl>
                         <FormControl margin="normal" required fullWidth>
-                            <InputLabel htmlFor="password">Password</InputLabel>
-                            <Input name="password" type="password" id="password" autoComplete="current-password"/>
+                            <InputLabel htmlFor="text">Key</InputLabel>
+                            <Input name="text" type="text" id="text" autoComplete="text"/>
                         </FormControl>
                     </form>
                     <Button
@@ -96,13 +96,13 @@ class SignIn extends React.Component {
                         onClick={() => {
                             var formData = $("#login").serializeArray();
                             var request = {
-                                username: formData[0].value,
-                                password: formData[1].value
+                                email: formData[0].value,
+                                key: formData[1].value
                             };
                             console.log(JSON.stringify(request));
                             $.ajax({
                                 method: 'POST',
-                                url: '/login',
+                                url: '/verify',
                                 data: JSON.stringify(request),
                                 contentType: 'application/json',
                                 success: this.executeLogin,
@@ -112,18 +112,7 @@ class SignIn extends React.Component {
                         }
                         }
                     >
-                        Sign in
-                    </Button>
-                    <Button
-                        fullWidth
-                        color="secondary"
-                        className={classes.submit}
-                        onClick={() => {
-                            this.navigate('register');
-                        }
-                        }
-                    >
-                        Create new account
+                        Verify
                     </Button>
                 </Paper>
             </div>
@@ -131,4 +120,4 @@ class SignIn extends React.Component {
     }
 }
 
-export {signInStyles, SignIn};
+export {verifyStyles, Verify};

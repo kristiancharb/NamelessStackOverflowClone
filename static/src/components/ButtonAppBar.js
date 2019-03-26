@@ -25,9 +25,15 @@ class ButtonAppBar extends React.Component {
     constructor (props) {
         super(props);
         this.navigate = props.navigate;
+        this.loggedIn = props.loggedIn;
+        this.logout = props.logout
     }
     render() {
         const { classes } = this.props;
+        const loginOutButton = (<Button color="inherit" onClick={() => {this.navigate('login');}}>Login</Button>)
+        if (this.loggedIn) {
+            loginOutButton = (<Button color="inherit" onClick={() => {this.logout();}}>Logout</Button>)
+        } 
         return (
             <div className={classes.root}>
                 <AppBar position="static">
@@ -38,7 +44,7 @@ class ButtonAppBar extends React.Component {
                     <Typography variant="h6" color="inherit" className={classes.grow}>
                         <Button color="inherit" onClick={() => {this.navigate('questions');}}>Questions</Button>
                     </Typography>
-                        <Button color="inherit" onClick={() => {this.navigate('login');}}>Login</Button>
+                        {loginOutButton}
                     </Toolbar>
                 </AppBar>
             </div>
