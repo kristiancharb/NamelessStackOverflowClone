@@ -27,7 +27,8 @@ const styles = {
 
 function Question(props) {
     const { classes, question } = props;
-    const bull = <span className={classes.bullet}>•</span>;
+    console.log('QUESTION: ')
+    console.log(question)
 
     return (
         <Card className={classes.card}>
