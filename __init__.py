@@ -6,8 +6,8 @@ import requests
 #vulture
 postfixServer = 'http://104.207.133.129'
 userAccountDB = 'http://149.28.40.50'
-#questionServer = 'http://63.209.35.124'
-questionServer = 'http://127.0.0.1:3000'
+questionServer = 'http://63.209.35.124'
+#questionServer = 'http://127.0.0.1:3000'
 app = Flask(__name__, template_folder='./static/build', static_folder='./static/build/static')
 
 def getUserId(sessionId):
