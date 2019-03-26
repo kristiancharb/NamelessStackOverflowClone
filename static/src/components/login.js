@@ -53,8 +53,9 @@ class SignIn extends React.Component {
         this.state = {
             error: (<div></div>),
         };
-        this.navigate = props.navigate
+        this.navigate = props.navigate;
         this.executeLogin = this.executeLogin.bind(this);
+        this.logInOut = props.logInOut;
     }
     executeLogin(result){
         console.log(result);
@@ -62,7 +63,7 @@ class SignIn extends React.Component {
             let ErrorStyled = withStyles(errorStyle)(Error);
             this.setState({error: (<ErrorStyled errorMessage={result.error} />)});
         }else {
-            this.props.onLogin({username: $("#login").serializeArray()[0].value, sessionID: result.sessionID});
+            this.logInOut();
             this.navigate('questions');
         }
     }

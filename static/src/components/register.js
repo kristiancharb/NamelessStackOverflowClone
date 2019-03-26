@@ -63,7 +63,6 @@ class Register extends React.Component {
             let ErrorStyled = withStyles(errorStyle)(Error);
             this.setState({error: (<ErrorStyled errorMessage={result.error} />)});
         }else {
-            this.props.onLogin({username: $("#login").serializeArray()[0].value, sessionID: result.sessionID});
             this.navigate('verify');
         }
     }
@@ -113,7 +112,7 @@ class Register extends React.Component {
                                     var request = {
                                         username: formData[0].value,
                                         password: formData[1].value,
-                                        email: formData[2].value
+                                        email: formData[3].value
                                     };
                                     console.log(JSON.stringify(request));
                                     $.ajax({

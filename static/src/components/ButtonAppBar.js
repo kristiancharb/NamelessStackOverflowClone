@@ -26,13 +26,13 @@ class ButtonAppBar extends React.Component {
         super(props);
         this.navigate = props.navigate;
         this.loggedIn = props.loggedIn;
-        this.logout = props.logout
+        this.logInOut = props.logInOut;
     }
     render() {
         const { classes } = this.props;
         const loginOutButton = (<Button color="inherit" onClick={() => {this.navigate('login');}}>Login</Button>)
         if (this.loggedIn) {
-            loginOutButton = (<Button color="inherit" onClick={() => {this.logout();}}>Logout</Button>)
+            loginOutButton = (<Button color="inherit" onClick={() => {this.logInOut();}}>Logout</Button>)
         } 
         return (
             <div className={classes.root}>

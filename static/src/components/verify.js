@@ -54,15 +54,14 @@ class Verify extends React.Component {
             error: (<div></div>),
         };
         this.navigate = props.navigate
-        this.executeLogin = this.executeLogin.bind(this);
+        this.executeVerification = this.executeVerification.bind(this);
     }
-    executeLogin(result){
+    executeVerification(result){
         console.log(result);
         if(typeof(result.error)!=="undefined") {
             let ErrorStyled = withStyles(errorStyle)(Error);
             this.setState({error: (<ErrorStyled errorMessage={result.error} />)});
         }else {
-            this.props.onLogin({username: $("#login").serializeArray()[0].value, sessionID: result.sessionID});
             this.navigate('questions');
         }
     }
@@ -105,7 +104,7 @@ class Verify extends React.Component {
                                 url: '/verify',
                                 data: JSON.stringify(request),
                                 contentType: 'application/json',
-                                success: this.executeLogin,
+                                success: this.executeVerification,
                                 error: function ajaxError(jqXHR, textStatus, errorThrown) {
                                 }
                             });

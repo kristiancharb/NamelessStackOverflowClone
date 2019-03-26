@@ -16,7 +16,7 @@ class App extends Component {
         this.VerifyStyled = withStyles(verifyStyles)(Verify);
         this.QuestionsContainer = <QuestionsContainer />;
         this.navigate = this.navigate.bind(this);
-        this.logout = this.logout.bind(this);
+        this.logInOut = this.logInOut.bind(this);
         this.state = {
             mode: (<QuestionsContainer/>),
             loggedIn: false
@@ -25,7 +25,7 @@ class App extends Component {
     
     navigate(destination){
         if (destination==='login') {
-            this.setState({mode: (<this.SignInStyled navigate={this.navigate}/>)})
+            this.setState({mode: (<this.SignInStyled logInOut={this.logInOut} navigate={this.navigate}/>)})
         } else if (destination==='questions') {
             this.setState({mode:(<QuestionsContainer/>)})
         } else if (destination==='register') {
@@ -35,13 +35,17 @@ class App extends Component {
         }
     }
 
-    logout(){
-        this.setState({loggedIn: false});
+    logInOut(){
+        if(this.state.loggedIn){
+            this.setState({loggedIn: false});
+        } else {
+            this.setState({loggedIn: true});
+        }
     }
     render() {
         return (
             <div>
-                <ButtonAppBar navigate={this.navigate} loggedIn={this.state.loggedIn}/>
+                <ButtonAppBar navigate={this.navigate} logInOut={this.logInOut}/>
                 {this.state.mode}
             </div>
         );
