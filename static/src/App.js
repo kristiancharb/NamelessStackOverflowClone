@@ -45,7 +45,7 @@ class App extends Component {
     render() {
         return (
             <div>
-                <ButtonAppBar navigate={this.navigate} logInOut={this.logInOut}/>
+                <ButtonAppBar navigate={this.navigate} logInOut={this.logInOut} loggedIn={this.state.loggedIn}/>
                 {this.state.mode}
             </div>
         );
