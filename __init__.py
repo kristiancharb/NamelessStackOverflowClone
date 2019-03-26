@@ -29,7 +29,7 @@ def addUser():
         email = request.json['email']
         response = requests.post(userAccountDB+'/adduser', json={'username': username, 'password': password, 'email': email})
         if(response.json()['status']=='ERROR'):
-            return jsonify({'status':'ERROR'}),201
+            return jsonify({'status':'error', 'error':'Could not add user'}),201
         else:
             response = requests.post(postfixServer+'/verify', json={'username': username, 'verificationCode': response.json()['verificationCode'], 'email': email})
             return jsonify({'status':response.json()['status']}),201
@@ -47,7 +47,7 @@ def verify():
         if(response.json()['status']=='OK'):
             return jsonify({'status':'OK'}),201
         else:
-            return jsonify({'status':'ERROR'}),201
+            return jsonify({'status':'error', 'error':'Could not verify user'}),201
     else:
         return jsonify({'status':'OK'})
 
@@ -58,7 +58,7 @@ def login():
         password = request.json['password']
         response = requests.post(userAccountDB+'/login', json={'username': username, 'password': password})
         if(response.json()['status']=='ERROR'):
-            return jsonify({'status':'ERROR'}),201
+            return jsonify({'status':'error', 'error':'Could not login'}),201
         else:
             clientResponse = make_response(jsonify({'status':'OK'}),201)
             clientResponse.set_cookie('sessionId', response.json()['sessionId'])
@@ -72,14 +72,14 @@ def logout():
     if (request.method == 'POST'):
         sessionId = request.cookies.get('sessionId')
         if(sessionId==''):
-            return jsonify({'status':'ERROR', 'error':'User not logged in'}),201
+            return jsonify({'status':'error', 'error':'User not logged in'}),201
         response = requests.post(userAccountDB+'/logout', json={'sessionID': sessionId})
         if(response.json()['status']=='OK'):
             clientResponse = make_response(jsonify({'status':'OK'}),201)
             clientResponse.set_cookie('sessionId', '')
             return clientResponse
         else:
-            return jsonify({'status':'ERROR'}),201
+            return jsonify({'status':'error', 'error':'Could not logout'}),201
     return jsonify({'status':'OK'})
 
 if __name__ == "__main__":

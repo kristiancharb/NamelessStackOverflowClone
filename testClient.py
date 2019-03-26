@@ -2,12 +2,14 @@ import unittest
 import requests
 from __init__ import getUserId
 
-clientServer = 'http://localhost:5000'
+#clientServer = 'http://localhost:5000'
 #open stack
 #clientServer = 'http://130.245.171.193'
 #userAccountDB = 'http://130.245.169.94'
 #vulture
 #clientServer = 'http://149.28.48.15'
+#grading
+clientServer = 'http://kristjamin.cse356.compas.cs.stonybrook.edu/'
 userAccountDB = 'http://149.28.40.50'
 
 class TestClientServer(unittest.TestCase):
@@ -44,11 +46,12 @@ class TestClientServer(unittest.TestCase):
         email = 'benjamin.yu.1@stonybrook.edu'
         requests.post(userAccountDB+'/deleteUser', json={'email': email})
         requests.post(clientServer+'/adduser', json={'username': username, 'password': password, 'email': email })
-        #test login without verify
         response = requests.post(clientServer+'/login', json={'username': username, 'password': password})
+        #test login without verification
         self.failUnlessEqual(response.json()['status'], 'ERROR')
         requests.post(clientServer+'/verify', json={'email': email, 'verificationCode': 'abracadabra'})
         response = requests.post(clientServer+'/login', json={'username': username, 'password': password})
+        #test login with verification
         self.failUnlessEqual(response.json()['status'], 'OK')
         #remove user
         requests.post(userAccountDB+'/deleteUser', json={'email': email})
