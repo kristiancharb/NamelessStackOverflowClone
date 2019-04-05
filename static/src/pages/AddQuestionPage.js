@@ -1,25 +1,23 @@
 import React from 'react';
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
-import {Error, errorStyle} from './error';
+import {Error, errorStyle} from '../components/error';
 import $ from 'jquery';
 
-const verifyStyles = theme => ({
+const styles = theme => ({
     main: {
-        width: 400,
+        width: 800,
         display: 'block', // Fix IE 11 issue.
         marginLeft: theme.spacing.unit * 3,
         marginRight: theme.spacing.unit * 3,
-        [theme.breakpoints.up(400 + theme.spacing.unit * 3 * 2)]: {
-            width: 400,
+        [theme.breakpoints.up(800 + theme.spacing.unit * 3 * 2)]: {
+            width: 800,
             marginLeft: 'auto',
             marginRight: 'auto',
         },
@@ -44,7 +42,7 @@ const verifyStyles = theme => ({
     },
 });
 
-class Verify extends React.Component {
+class AddQuestion extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
@@ -52,16 +50,16 @@ class Verify extends React.Component {
             debug: props.debug,
         };
         this.navigate = props.navigate
-        this.executeVerification = this.executeVerification.bind(this);
+        this.executeAddQuestion = this.executeAddQuestion.bind(this);
     }
 
-    executeVerification(result){
+    executeAddQuestion(result){
         console.log(result);
         if(typeof(result.error)!=="undefined") {
             let ErrorStyled = withStyles(errorStyle)(Error);
             this.setState({error: (<ErrorStyled errorMessage={result.error} />)});
         }else {
-            this.navigate('login');
+            this.navigate('questions');
         }
     }
     
@@ -72,19 +70,21 @@ class Verify extends React.Component {
                 <CssBaseline/>
                 <Paper className={classes.paper}>
                     {this.state.error}
-                    <Avatar className={classes.avatar}>
-                    </Avatar>
                     <Typography component="h1" variant="h5">
-                        Verify Account
+                        Add Question
                     </Typography>
-                    <form className={classes.form} id={"login"}>
+                    <form className={classes.form} id={"questionForm"}>
                         <FormControl margin="normal" required fullWidth>
-                            <InputLabel htmlFor="email">Email</InputLabel>
-                            <Input id="email" name="email" autoComplete="email" autoFocus/>
+                            <InputLabel htmlFor="title">Title</InputLabel>
+                            <Input name="title" type="title" id="title" autoComplete="title"/>
                         </FormControl>
                         <FormControl margin="normal" required fullWidth>
-                            <InputLabel htmlFor="text">Key</InputLabel>
-                            <Input name="text" type="text" id="text" autoComplete="text"/>
+                            <InputLabel htmlFor="question">Question</InputLabel>
+                            <Input multiline rows={4} id="question" name="question" autoComplete="question" autoFocus/>
+                        </FormControl>
+                        <FormControl margin="normal" required fullWidth>
+                            <InputLabel htmlFor="tag">Tags(comma separated)</InputLabel>
+                            <Input name="tag" type="tag" id="tag" autoComplete="tag"/>
                         </FormControl>
                     </form>
                     <Button
@@ -95,20 +95,23 @@ class Verify extends React.Component {
                         onClick={
                             () => {
                                 if(this.state.debug){
-                                    this.executeVerification({});
+                                    this.executeAddQuestion({});
+                                    let formData = $("#questionForm").serializeArray();
+                                    console.log(formData[2].value.split(","));
                                 } else {
-                                    var formData = $("#login").serializeArray();
+                                    var formData = $("#questionForm").serializeArray();
                                     var request = {
-                                        email: formData[0].value,
-                                        key: formData[1].value
+                                        title: formData[0].value,
+                                        question: formData[1].value,
+                                        tag: formData[2].value.split(",")
                                     };
                                     console.log(JSON.stringify(request));
                                     $.ajax({
                                         method: 'POST',
-                                        url: '/verify',
+                                        url: '/questions/add',
                                         data: JSON.stringify(request),
                                         contentType: 'application/json',
-                                        success: this.executeVerification,
+                                        success: this.executeAddQuestion,
                                         error: function ajaxError(jqXHR, textStatus, errorThrown) {
                                         }
                                     });
@@ -124,4 +127,4 @@ class Verify extends React.Component {
     }
 }
 
-export {verifyStyles, Verify};
+export default withStyles(styles)(AddQuestion);

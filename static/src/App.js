@@ -6,6 +6,7 @@ import { SignIn,signInStyles } from './components/login'
 import { Register,registerStyles } from './components/register'
 import { Verify,verifyStyles } from './components/verify'
 import withStyles from '@material-ui/core/styles/withStyles';
+import AddQuestion from './pages/AddQuestionPage'
 
 
 class App extends Component {
@@ -28,12 +29,14 @@ class App extends Component {
     navigate(destination){
         if (destination==='login') {
             this.setState({mode: (<this.SignInStyled debug={this.state.debug} logInOut={this.logInOut} navigate={this.navigate}/>)})
+        } else if (destination==='addQuestion') {
+            this.setState({mode:(<AddQuestion debug={this.state.debug} navigate={this.navigate}/>)})
         } else if (destination==='questions') {
             this.setState({mode:(<QuestionsContainer/>)})
         } else if (destination==='register') {
-            this.setState({mode:(<this.RegisterStyled navigate={this.navigate}/>)})
+            this.setState({mode:(<this.RegisterStyled debug={this.state.debug} navigate={this.navigate}/>)})
         } else if (destination==='verify') {
-            this.setState({mode:(<this.VerifyStyled navigate={this.navigate}/>)})
+            this.setState({mode:(<this.VerifyStyled debug={this.state.debug} navigate={this.navigate}/>)})
         }
     }
 

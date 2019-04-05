@@ -53,10 +53,12 @@ class Register extends React.Component {
         super(props);
         this.state = {
             error: (<div></div>),
+            debug: props.debug,
         };
         this.navigate = props.navigate
         this.executeRegistration=this.executeRegistration.bind(this);
     }
+
     executeRegistration(result){
         console.log(result);
         if(typeof(result.error)!=="undefined") {
@@ -66,6 +68,7 @@ class Register extends React.Component {
             this.navigate('verify');
         }
     }
+
     render() {
         const {classes} = this.props;
         return (
@@ -106,6 +109,9 @@ class Register extends React.Component {
                                 var formData = $("#login").serializeArray();
                                 if(formData[1].value!==formData[2].value) {
                                     this.executeRegistration({error: "Passwords do not match"});
+                                }
+                                else if (this.state.debug) {
+                                    this.executeRegistration({});
                                 }
                                 else {
                                     var formData = $("#login").serializeArray();
