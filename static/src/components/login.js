@@ -52,6 +52,7 @@ class SignIn extends React.Component {
         super(props);
         this.state = {
             error: (<div></div>),
+            debug: this.debug,
         };
         this.navigate = props.navigate;
         this.executeLogin = this.executeLogin.bind(this);
@@ -95,21 +96,25 @@ class SignIn extends React.Component {
                         color="primary"
                         className={classes.submit}
                         onClick={() => {
-                            var formData = $("#login").serializeArray();
-                            var request = {
-                                username: formData[0].value,
-                                password: formData[1].value
-                            };
-                            console.log(JSON.stringify(request));
-                            $.ajax({
-                                method: 'POST',
-                                url: '/login',
-                                data: JSON.stringify(request),
-                                contentType: 'application/json',
-                                success: this.executeLogin,
-                                error: function ajaxError(jqXHR, textStatus, errorThrown) {
-                                }
-                            });
+                            if (this.state.debug) {
+                                var formData = $("#login").serializeArray();
+                                var request = {
+                                    username: formData[0].value,
+                                    password: formData[1].value
+                                };
+                                console.log(JSON.stringify(request));
+                                $.ajax({
+                                    method: 'POST',
+                                    url: '/login',
+                                    data: JSON.stringify(request),
+                                    contentType: 'application/json',
+                                    success: this.executeLogin,
+                                    error: function ajaxError(jqXHR, textStatus, errorThrown) {
+                                    }
+                                });
+                            } else {
+                                this.executeLogin({});
+                            }
                         }
                         }
                     >

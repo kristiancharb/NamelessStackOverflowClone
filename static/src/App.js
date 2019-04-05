@@ -19,13 +19,15 @@ class App extends Component {
         this.logInOut = this.logInOut.bind(this);
         this.state = {
             mode: (<QuestionsContainer/>),
-            loggedIn: false
+            debug: true,
+            loggedIn: true,
         }
+        
     }
     
     navigate(destination){
         if (destination==='login') {
-            this.setState({mode: (<this.SignInStyled logInOut={this.logInOut} navigate={this.navigate}/>)})
+            this.setState({mode: (<this.SignInStyled debug={this.state.debug} logInOut={this.logInOut} navigate={this.navigate}/>)})
         } else if (destination==='questions') {
             this.setState({mode:(<QuestionsContainer/>)})
         } else if (destination==='register') {
@@ -41,11 +43,14 @@ class App extends Component {
         } else {
             this.setState({loggedIn: true});
         }
+        if(this.state.debug) {
+            console.log(this.state);
+        }
     }
     render() {
         return (
             <div>
-                <ButtonAppBar navigate={this.navigate} logInOut={this.logInOut} loggedIn={this.state.loggedIn}/>
+                <ButtonAppBar debug={this.state.debug} navigate={this.navigate} logInOut={this.logInOut} loggedIn={this.state.loggedIn}/>
                 {this.state.mode}
             </div>
         );
