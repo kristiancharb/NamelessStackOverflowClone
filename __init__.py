@@ -17,7 +17,7 @@ def getUserId(sessionId):
     else:
         return ''
 
-@app.route("/isLoggedIn")
+@app.route("/isLoggedIn", methods=['POST'])
 def isLoggedIn():
     sessionId = request.cookies.get('sessionId')
     if(getUserId(sessionId)==''):
