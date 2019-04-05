@@ -26,7 +26,7 @@ class App extends Component {
         this.openQuestion = this.openQuestion.bind(this);
         this.state = {
             mode: (<div>Loading...</div>),
-            debug: true,
+            debug: false,
             loggedIn: false,
         }
     }
