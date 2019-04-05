@@ -25,32 +25,43 @@ const styles = {
     },
 };
 
-function Question(props) {
-    const { classes, question } = props;
-    console.log('QUESTION: ')
-    console.log(question)
+class Question extends React.Component{
+    constructor(props){
+        super(props);
+        this.openQuestion=props.openQuestion;
+        this.questionId = props.questionId;
 
-    return (
-        <Card className={classes.card}>
-            <CardContent>
-                <Typography variant="h5" component="h2">
-                    {question.title}
-                </Typography>
-                <Typography className={classes.pos} color="textSecondary">
-                    By {question.user.username}
-                </Typography>
-                <Typography component="p">
-                    {question.body}
-                </Typography>
-                <Typography className={classes.title} color="textSecondary" gutterBottom>
-                    Views: {question.view_count}
-                </Typography>
-            </CardContent>
-            <CardActions>
-                <Button size="small">View Answers</Button>
-            </CardActions>
-        </Card>
-    );
+    }
+    render() {
+        const { classes, question } = this.props;
+        console.log('QUESTION: ')
+        console.log(question)
+
+        return (
+            <Card className={classes.card} onClick={()=>{this.openQuestion(question.id)}}>
+                <CardContent>
+                    <Typography variant="h5" component="h2">
+                        {question.title}
+                    </Typography>
+                    <Typography className={classes.pos} color="textSecondary">
+                        By {question.user.username}
+                    </Typography>
+                    <Typography component="p">
+                        {question.body}
+                    </Typography>
+                    <Typography className={classes.title} color="textSecondary" gutterBottom>
+                        Views: {question.view_count}
+                    </Typography>
+                    <Typography className={classes.title} color="textSecondary" gutterBottom>
+                        Answers: {question.answer_count}
+                    </Typography>
+                </CardContent>
+                <CardActions>
+                    <Button size="small">View Answers</Button>
+                </CardActions>
+            </Card>
+        );
+    }
 }
 
 Question.propTypes = {

@@ -7,8 +7,10 @@ import { Register,registerStyles } from './components/register'
 import { Verify,verifyStyles } from './components/verify'
 import withStyles from '@material-ui/core/styles/withStyles';
 import AddQuestion from './pages/AddQuestionPage'
+import Search from './pages/SearchPage'
 import {Error, errorStyle} from './components/error';
 import $ from 'jquery';
+import ViewQuestionPage from './pages/ViewQuestionPage';
             
 
 class App extends Component {
@@ -21,9 +23,10 @@ class App extends Component {
         this.navigate = this.navigate.bind(this);
         this.logInOut = this.logInOut.bind(this);
         this.executeLogin = this.executeLogin.bind(this);
+        this.openQuestion = this.openQuestion.bind(this);
         this.state = {
-            mode: (<QuestionsContainer/>),
-            debug: false,
+            mode: (<div>Loading...</div>),
+            debug: true,
             loggedIn: false,
         }
     }
@@ -50,15 +53,22 @@ class App extends Component {
                 }
             });
         } 
+        this.setState({mode:(<QuestionsContainer openQuestion={this.openQuestion}/>)})
 	}
     
+    openQuestion(id){
+        this.setState({mode: (<ViewQuestionPage debug={this.state.debug} navigate={this.navigate} questionId={id}/>)})
+    }
+
     navigate(destination){
         if (destination==='login') {
             this.setState({mode: (<this.SignInStyled debug={this.state.debug} logInOut={this.logInOut} navigate={this.navigate}/>)})
         } else if (destination==='addQuestion') {
             this.setState({mode:(<AddQuestion debug={this.state.debug} navigate={this.navigate}/>)})
+        } else if (destination==='search') {
+            this.setState({mode:(<Search debug={this.state.debug} navigate={this.navigate}/>)})
         } else if (destination==='questions') {
-            this.setState({mode:(<QuestionsContainer/>)})
+            this.setState({mode:(<QuestionsContainer openQuestion={this.openQuestion}/>)})
         } else if (destination==='register') {
             this.setState({mode:(<this.RegisterStyled debug={this.state.debug} navigate={this.navigate}/>)})
         } else if (destination==='verify') {

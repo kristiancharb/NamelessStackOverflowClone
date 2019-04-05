@@ -1,4 +1,5 @@
 import React from 'react';
+import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
@@ -8,9 +9,10 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import {Error, errorStyle} from '../components/error';
+import QuestionsContainer from '../components/QuestionsContainer'
 import $ from 'jquery';
 
-const styles = theme => ({
+const SearchStyles = theme => ({
     main: {
         width: 800,
         display: 'block', // Fix IE 11 issue.
@@ -42,27 +44,29 @@ const styles = theme => ({
     },
 });
 
-class AddQuestion extends React.Component {
+class Search extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
             error: (<div></div>),
             debug: props.debug,
         };
-        this.navigate = props.navigate
-        this.executeAddQuestion = this.executeAddQuestion.bind(this);
+        this.navigate = props.navigate;
+        this.executeLogin = this.executeLogin.bind(this);
+        this.logInOut = props.logInOut;
     }
 
-    executeAddQuestion(result){
+    executeLogin(result){
         console.log(result);
         if(typeof(result.error)!=="undefined") {
             let ErrorStyled = withStyles(errorStyle)(Error);
             this.setState({error: (<ErrorStyled errorMessage={result.error} />)});
         }else {
+            this.logInOut();
             this.navigate('questions');
         }
     }
-    
+
     render () {
         const {classes} = this.props;
         return (
@@ -70,21 +74,15 @@ class AddQuestion extends React.Component {
                 <CssBaseline/>
                 <Paper className={classes.paper}>
                     {this.state.error}
+                    <Avatar className={classes.avatar}>
+                    </Avatar>
                     <Typography component="h1" variant="h5">
-                        Add Question
+                        Search
                     </Typography>
-                    <form className={classes.form} id={"questionForm"}>
+                    <form className={classes.form} id={"login"}>
                         <FormControl margin="normal" required fullWidth>
-                            <InputLabel htmlFor="title">Title</InputLabel>
-                            <Input name="title" type="title" id="title" autoComplete="title"/>
-                        </FormControl>
-                        <FormControl margin="normal" required fullWidth>
-                            <InputLabel htmlFor="question">Question</InputLabel>
-                            <Input multiline rows={4} id="question" name="question" autoComplete="question" autoFocus/>
-                        </FormControl>
-                        <FormControl margin="normal" required fullWidth>
-                            <InputLabel htmlFor="tag">Tags(comma separated)</InputLabel>
-                            <Input name="tag" type="tag" id="tag" autoComplete="tag"/>
+                            <InputLabel htmlFor="query">Query</InputLabel>
+                            <Input name="query" type="query" id="query" autoComplete="query"/>
                         </FormControl>
                     </form>
                     <Button
@@ -92,39 +90,35 @@ class AddQuestion extends React.Component {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        onClick={
-                            () => {
-                                if(this.state.debug){
-                                    this.executeAddQuestion({});
-                                    let formData = $("#questionForm").serializeArray();
-                                    console.log(formData[2].value.split(","));
-                                } else {
-                                    var formData = $("#questionForm").serializeArray();
-                                    var request = {
-                                        title: formData[0].value,
-                                        body: formData[1].value,
-                                        tags: formData[2].value.split(",")
-                                    };
-                                    console.log(JSON.stringify(request));
-                                    $.ajax({
-                                        method: 'POST',
-                                        url: '/questions/add',
-                                        data: JSON.stringify(request),
-                                        contentType: 'application/json',
-                                        success: this.executeAddQuestion,
-                                        error: function ajaxError(jqXHR, textStatus, errorThrown) {
-                                        }
-                                    });
-                                }
+                        onClick={() => {
+                            if (!this.state.debug) {
+                                var formData = $("#login").serializeArray();
+                                var request = {
+                                    q: formData[0].value,
+                                };
+                                console.log(JSON.stringify(request));
+                                $.ajax({
+                                    method: 'POST',
+                                    url: '/login',
+                                    data: JSON.stringify(request),
+                                    contentType: 'application/json',
+                                    success: this.executeLogin,
+                                    error: function ajaxError(jqXHR, textStatus, errorThrown) {
+                                    }
+                                });
+                            } else {
+                                this.executeLogin({});
                             }
                         }
+                        }
                     >
-                        Submit
+                        Search
                     </Button>
                 </Paper>
+                <QuestionsContainer/>
             </div>
         );
     }
 }
 
-export default withStyles(styles)(AddQuestion);
+export default withStyles(SearchStyles)(Search);

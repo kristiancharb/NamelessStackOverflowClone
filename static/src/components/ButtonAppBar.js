@@ -88,6 +88,7 @@ class ButtonAppBar extends React.Component {
                     <Typography variant="h6" color="inherit" className={classes.grow}>
                         <Button color="inherit" onClick={() => {this.navigate('questions');}}>Questions</Button>
                         <Button color="inherit" onClick={() => {this.navigate('addQuestion');}}>Add Question</Button>
+                        <Button color="inherit" onClick={() => {this.navigate('search');}}>Search</Button>
                     </Typography>
                         {loginOutButton}
                     </Toolbar>

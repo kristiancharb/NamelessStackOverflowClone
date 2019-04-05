@@ -9,6 +9,7 @@ class QuestionsContainer extends Component {
             isLoaded: false,
             questions: []
         };
+        this.openQuestion=props.openQuestion;
     }
 
     componentDidMount() {
@@ -46,7 +47,7 @@ class QuestionsContainer extends Component {
         } else {
             return questions.map((question) => (
                 <div>
-                    <Question question={question} />
+                    <Question question={question} openQuestion={this.openQuestion} questionId={question.id}/>
                 </div>
             ))
         }
