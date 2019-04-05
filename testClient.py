@@ -22,10 +22,10 @@ class TestClientServer(unittest.TestCase):
         email = 'benjamin.yu.1@stonybrook.edu'
         response = requests.post(userAccountDB+'/deleteUser', json={'email': email})
         response = requests.post(clientServer+'/adduser', json={'username': username, 'password': password, 'email': email })
-        self.failUnlessEqual(response.json()['status'], 'OK')
+        self.assertEqual(response.json()['status'], 'OK')
         response = requests.post(clientServer+'/adduser', json={'username': username, 'password': password, 'email': email })
         #Check you cannot added a user that had been added before
-        self.failUnlessEqual(response.json()['status'], 'error')
+        self.assertEqual(response.json()['status'], 'error')
         response = requests.post(userAccountDB+'/deleteUser', json={'email': email})
 
     def testVerifyUser(self):
@@ -36,30 +36,30 @@ class TestClientServer(unittest.TestCase):
         requests.post(clientServer+'/adduser', json={'username': username, 'password': password, 'email': email })
         response = requests.post(clientServer+'/verify', json={'email': email, 'key': 'blashblash'})
         #test wrong verification code
-        self.failUnlessEqual(response.json()['status'], 'error')
+        self.assertEqual(response.json()['status'], 'error')
         response = requests.post(clientServer+'/verify', json={'email': email, 'key': 'abracadabra'})
         #Verify added user
-        self.failUnlessEqual(response.json()['status'], 'OK')
+        self.assertEqual(response.json()['status'], 'OK')
         requests.post(userAccountDB+'/deleteUser', json={'email': email})
         
     def testLogin(self):
-        username = 'ben'
+        username = 'seal'
         password = 'password'
         email = 'benjamin.yu.1@stonybrook.edu'
         requests.post(userAccountDB+'/deleteUser', json={'email': email})
         requests.post(clientServer+'/adduser', json={'username': username, 'password': password, 'email': email })
         response = requests.post(clientServer+'/login', json={'username': username, 'password': password})
         #test login without verification
-        self.failUnlessEqual(response.json()['status'], 'error')
+        self.assertEqual(response.json()['status'], 'error')
         requests.post(clientServer+'/verify', json={'email': email, 'key': 'abracadabra'})
         response = requests.post(clientServer+'/login', json={'username': username, 'password': password})
         #test login with verification
-        self.failUnlessEqual(response.json()['status'], 'OK')
+        self.assertEqual(response.json()['status'], 'OK')
         #remove user
         requests.post(userAccountDB+'/deleteUser', json={'email': email})
         
     def testLogout(self):
-        username = 'ben'
+        username = 'asdfg'
         password = 'password'
         email = 'benjamin.yu.1@stonybrook.edu'
         requests.post(userAccountDB+'/deleteUser', json={'email': email})
@@ -69,16 +69,16 @@ class TestClientServer(unittest.TestCase):
         sessionId = response.cookies['sessionId']
         cookies = dict(sessionId=sessionId)
         response = requests.post(clientServer+'/logout',cookies=cookies) 
-        self.failUnlessEqual(response.json()['status'], 'OK')
+        self.assertEqual(response.json()['status'], 'OK')
         #logout without logging in
         cookies = dict(sessionId='')
         response = requests.post(clientServer+'/logout',cookies=cookies) 
-        self.failUnlessEqual(response.json()['status'], 'error')
+        self.assertEqual(response.json()['status'], 'error')
         #remove user
         requests.post(userAccountDB+'/deleteUser', json={'email': email})
  
     def testGetUserId(self):
-        username = 'ben'
+        username = 'henry'
         password = 'password'
         email = 'benjamin.yu.1@stonybrook.edu'
         requests.post(userAccountDB+'/deleteUser', json={'email': email})
@@ -86,10 +86,10 @@ class TestClientServer(unittest.TestCase):
         requests.post(clientServer+'/verify', json={'email': email, 'key': 'abracadabra'})
         response = requests.post(clientServer+'/login', json={'username': username, 'password': password})
         sessionId = response.cookies['sessionId']
-        self.failUnlessEqual(getUserId(sessionId), 'ben')
+        self.assertEqual(getUserId(sessionId), 'henry')
         cookies = dict(sessionId=sessionId)
         response = requests.post(clientServer+'/logout',cookies=cookies) 
-        self.failUnlessEqual(getUserId(sessionId), '')
+        self.assertEqual(getUserId(sessionId), '')
         cookies = dict(sessionId=sessionId)
         requests.post(userAccountDB+'/deleteUser', json={'email': email})
 

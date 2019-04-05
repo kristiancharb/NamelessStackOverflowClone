@@ -58,6 +58,7 @@ class SignIn extends React.Component {
         this.executeLogin = this.executeLogin.bind(this);
         this.logInOut = props.logInOut;
     }
+
     executeLogin(result){
         console.log(result);
         if(typeof(result.error)!=="undefined") {
@@ -68,6 +69,7 @@ class SignIn extends React.Component {
             this.navigate('questions');
         }
     }
+
     render () {
         const {classes} = this.props;
         return (

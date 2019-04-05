@@ -17,6 +17,15 @@ def getUserId(sessionId):
     else:
         return ''
 
+@app.route("/isLoggedIn")
+def isLoggedIn():
+    sessionId = request.cookies.get('sessionId')
+    if(getUserId(sessionId)==''):
+        return jsonify({'status':'error', 'error':'User not logged in'}),201
+    else:
+        return jsonify({'status':'OK'})
+
+
 @app.route("/")
 def hello():
     return render_template('index.html')

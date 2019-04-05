@@ -102,8 +102,8 @@ class AddQuestion extends React.Component {
                                     var formData = $("#questionForm").serializeArray();
                                     var request = {
                                         title: formData[0].value,
-                                        question: formData[1].value,
-                                        tag: formData[2].value.split(",")
+                                        body: formData[1].value,
+                                        tags: formData[2].value.split(",")
                                     };
                                     console.log(JSON.stringify(request));
                                     $.ajax({

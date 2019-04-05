@@ -7,7 +7,9 @@ import { Register,registerStyles } from './components/register'
 import { Verify,verifyStyles } from './components/verify'
 import withStyles from '@material-ui/core/styles/withStyles';
 import AddQuestion from './pages/AddQuestionPage'
-
+import {Error, errorStyle} from './components/error';
+import $ from 'jquery';
+            
 
 class App extends Component {
     constructor(){
@@ -18,13 +20,37 @@ class App extends Component {
         this.QuestionsContainer = <QuestionsContainer />;
         this.navigate = this.navigate.bind(this);
         this.logInOut = this.logInOut.bind(this);
+        this.executeLogin = this.executeLogin.bind(this);
         this.state = {
             mode: (<QuestionsContainer/>),
             debug: false,
-            loggedIn: true,
+            loggedIn: false,
         }
-        
     }
+
+    executeLogin(result){
+        console.log(result);
+        if(typeof(result.error)!=="undefined") {
+            let ErrorStyled = withStyles(errorStyle)(Error);
+            this.setState({error: (<ErrorStyled errorMessage={result.error} />)});
+        }else {
+            this.logInOut();
+        }
+    }
+   
+    componentDidMount() {
+        if (!this.state.debug) {
+            $.ajax({
+                method: 'POST',
+                url: '/isLoggedIn',
+                data: JSON.stringify({}),
+                contentType: 'application/json',
+                success: this.executeLogin,
+                error: function ajaxError(jqXHR, textStatus, errorThrown) {
+                }
+            });
+        } 
+	}
     
     navigate(destination){
         if (destination==='login') {
@@ -50,6 +76,7 @@ class App extends Component {
             console.log(this.state);
         }
     }
+
     render() {
         return (
             <div>
