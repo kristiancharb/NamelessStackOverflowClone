@@ -52,7 +52,7 @@ class SignIn extends React.Component {
         super(props);
         this.state = {
             error: (<div></div>),
-            debug: this.debug,
+            debug: props.debug,
         };
         this.navigate = props.navigate;
         this.executeLogin = this.executeLogin.bind(this);
@@ -96,7 +96,7 @@ class SignIn extends React.Component {
                         color="primary"
                         className={classes.submit}
                         onClick={() => {
-                            if (this.state.debug) {
+                            if (!this.state.debug) {
                                 var formData = $("#login").serializeArray();
                                 var request = {
                                     username: formData[0].value,

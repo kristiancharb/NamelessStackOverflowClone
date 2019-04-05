@@ -1,4 +1,5 @@
 import React from 'react';
+import $ from 'jquery';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -51,7 +52,21 @@ class ButtonAppBar extends React.Component {
         const { classes } = this.props;
         let loginOutButton = (<Button color="inherit" onClick={() => {this.navigate('login');}}>Login</Button>)
         if (this.state.loggedIn) {
-            loginOutButton = (<Button color="inherit" onClick={() => {this.logInOut();}}>Logout</Button>)
+            loginOutButton = (<Button color="inherit" onClick={() => {
+                            if (!this.state.debug) {
+                                $.ajax({
+                                    method: 'POST',
+                                    url: '/logout',
+                                    data: JSON.stringify({}),
+                                    contentType: 'application/json',
+                                    success: this.logout,
+                                    error: function ajaxError(jqXHR, textStatus, errorThrown) {
+                                    }
+                                });
+                            } else {
+                                this.logout({});
+                            }
+            }}>Logout</Button>)
         } 
         if(this.state.debug) {
             console.log(this.state);

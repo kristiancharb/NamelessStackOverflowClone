@@ -19,7 +19,7 @@ class App extends Component {
         this.logInOut = this.logInOut.bind(this);
         this.state = {
             mode: (<QuestionsContainer/>),
-            debug: true,
+            debug: false,
             loggedIn: true,
         }
         
