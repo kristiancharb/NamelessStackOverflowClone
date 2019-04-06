@@ -64,7 +64,7 @@ class Search extends React.Component {
         if (!this.state.debug) {
              $.ajax({
                 method: 'Get',
-                url: '/questions'+this.questionId,
+                url: '/questions/'+this.questionId,
                 data: {},
                 contentType: 'application/json',
                 success: this.executeViewQuestion,
@@ -73,7 +73,7 @@ class Search extends React.Component {
             });
             $.ajax({
                 method: 'Get',
-                url: '/questions'+this.questionId+'/answers',
+                url: '/questions/'+this.questionId+'/answers',
                 data: {},
                 contentType: 'application/json',
                 success: this.executeViewAnswers,
