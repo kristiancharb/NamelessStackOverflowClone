@@ -50,7 +50,7 @@ class Search extends React.Component {
         this.state = {
             error: (<div></div>),
             debug: props.debug,
-            question: (<div/>),
+            question: {user: '',},
             user: {},
         };
         this.questionId=props.questionId;
@@ -81,19 +81,21 @@ class Search extends React.Component {
             });
         } else {
             this.executeViewQuestion({
-                user: {
-                    username: 'ben',
-                    reputation: 56,
-                },
-                title: 'this is the title',
-                body: 'this is the question',
-                score: 23,
-                view_count: "3000",
-                answer_count: "30",
-                timestamp: 29878812889,
-                media: [],
-                tags: ['tag1', 'tag2', 'tag3'],
-                accepted_answer_id: null,
+                question: {
+                    user: {
+                        username: 'ben',
+                        reputation: 56,
+                    },
+                    title: 'this is the title',
+                    body: 'this is the question',
+                    score: 23,
+                    view_count: "3000",
+                    answer_count: "30",
+                    timestamp: 29878812889,
+                    media: [],
+                    tags: ['tag1', 'tag2', 'tag3'],
+                    accepted_answer_id: null,
+                }
             });
             this.executeViewAnswers({
                 answers: [
@@ -133,8 +135,8 @@ class Search extends React.Component {
         const {classes} = this.props;
         let tags = ""
         var tag;
-        for (tag in this.state.tags) {
-            tags = this.state.tags[tag]+","+tags;
+        for (tag in this.state.question.tags) {
+            tags = this.state.question.tags[tag]+","+tags;
         }
         let answers = [];
         var answer;
@@ -157,16 +159,16 @@ class Search extends React.Component {
                 <Paper className={classes.paper}>
                     {this.state.error}
                     <Typography className={classes.pos} color="textSecondary">
-                        By {this.state.user.username}
+                        By {this.state.question.user.username}
                     </Typography>
                     <Typography className={classes.title} color="textSecondary" gutterBottom>
-                        Reputation: {this.state.user.reputation}
+                        Reputation: {this.state.question.user.reputation}
                     </Typography>
                     <Typography component="p">
-                        {this.state.body}
+                        {this.state.question.body}
                     </Typography>
                     <Typography className={classes.title} color="textSecondary" gutterBottom>
-                        Views: {this.state.view_count}
+                        Views: {this.state.question.view_count}
                     </Typography>
                     <Typography className={classes.title} color="textSecondary" gutterBottom>
                         {tags}
