@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import {Error, errorStyle} from '../components/error';
 import QuestionsContainer from '../components/QuestionsContainer'
+import Answer from '../components/Answer'
 import $ from 'jquery';
 
 const SearchStyles = theme => ({
@@ -139,17 +140,9 @@ class Search extends React.Component {
         let answers = [];
         var answer;
         for (answer in this.state.answers) {
-            answers.push(<Paper key={answer}>
-                <Typography>
-                    {this.state.answers[answer].user}
-                </Typography>
-                <Typography>
-                    {this.state.answers[answer].body}
-                </Typography>
-                <Typography>
-                    {this.state.answers[answer].score}
-                </Typography>
-            </Paper>)
+            answers.push(
+                <Answer key={answer} answer={this.state.answers[answer]}/ >
+            )
         }
         return (
             <div className={classes.main}>
