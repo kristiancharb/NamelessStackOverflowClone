@@ -1,4 +1,4 @@
-from flask import (Flask, make_response, request,send_from_directory,render_template,jsonify)
+from flask import (Flask, make_response, request, send_from_directory, render_template, jsonify, abort)
 import requests
 #openstack
 #postfixServer = 'http://130.245.171.187'
@@ -100,8 +100,18 @@ def getQuestionServerUrl(request):
     index = request.url.index('/', 7)
     return questionServer + request.url[index:]
 
+@app.route("/user/<username>/questions", methods=['GET'])
+def userQuestions(username):
+    resp = requests.get(getQuestionServerUrl(request))
+    return (resp.text, resp.status_code, resp.headers.items())
+
+@app.route("/user/<username>/answers", methods=['GET'])
+def userAnswers(username):
+    resp = requests.get(getQuestionServerUrl(request))
+    return (resp.text, resp.status_code, resp.headers.items())
+
 @app.route('/questions/add', methods=['POST'])
-def addquestion():
+def addQuestion():
     sessionId = request.cookies.get('sessionId')
     data = request.json
     if sessionId is not None:
@@ -110,18 +120,25 @@ def addquestion():
     resp = requests.post(getQuestionServerUrl(request), json=data)
     return (resp.text, resp.status_code, resp.headers.items())
 
-@app.route('/questions/<id>', methods=['GET'])
-def getquestion(id):
+@app.route('/questions/<id>', methods=['GET', 'DELETE'])
+def getQuestion(id):
     sessionId = request.cookies.get('sessionId')
     if sessionId is None:
         user = request.remote_addr
     else:
         user = getUserId(sessionId)
-    resp = requests.get(getQuestionServerUrl(request), params={ 'user': user})
-    return (resp.text, resp.status_code, resp.headers.items())
+    if request.method == 'GET':
+        resp = requests.get(getQuestionServerUrl(request), params={ 'user': user})
+        return (resp.text, resp.status_code, resp.headers.items())
+    else:
+        resp = requests.delete(getQuestionServerUrl(request), params={ 'user': user})
+        if resp.status_code == 200:
+            return 'Success', 200
+        else:
+            abort(400)
 
 @app.route('/questions/<id>/answers/add', methods=['POST'])
-def addanswer(id):
+def addAnswer(id):
     sessionId = request.cookies.get('sessionId')
     data = request.json
     if sessionId is not None:
@@ -131,7 +148,7 @@ def addanswer(id):
     return (resp.text, resp.status_code, resp.headers.items())
 
 @app.route('/questions/<id>/answers', methods=['GET'])
-def getanswers(id):
+def getAnswers(id):
     resp = requests.get(getQuestionServerUrl(request))
     return (resp.text, resp.status_code, resp.headers.items())
 
