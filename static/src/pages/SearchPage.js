@@ -56,6 +56,7 @@ class Search extends React.Component {
         this.navigate = props.navigate;
         this.executeSearch = this.executeSearch.bind(this);
         this.openQuestion = props.openQuestion;
+        this.viewUser = props.viewUser;
     }
 
     executeSearch(result){

@@ -46,9 +46,10 @@ def addUser():
     else:
         return jsonify({'status':'OK'})
 
-@app.route('/user/<username>', methods=['POST'])
-def addanswer(username):
-    return username
+@app.route('/user/<username>', methods=['GET'])
+def getUserProfile(username):
+    return requests.get(userAccountDB+'/user/'+username).text
+
 
 @app.route("/verify", methods=['GET', 'POST'])
 def verify():

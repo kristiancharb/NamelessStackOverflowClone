@@ -56,6 +56,7 @@ class UserProfile extends React.Component{
     this.navigate = props.navigate;
     this.isCreating = props.isCreating;
     this.userId = props.userId;
+    this.viewUser = props.viewUser;
     this.openQuestion = props.openQuestion;
     this.executeViewUserProfile = this.executeViewUserProfile.bind(this);
     this.executeViewUserQuestions = this.executeViewUserQuestions.bind(this);
@@ -96,7 +97,7 @@ class UserProfile extends React.Component{
       let debug = new DebugConstants();
       this.executeViewUserProfile({
         user: {
-          username: "ben",
+          email: "ben@yubenjamin.com",
           reputation: 56,
         }
       })
@@ -108,8 +109,8 @@ class UserProfile extends React.Component{
   }
 
   executeViewUserProfile(result){
-      console.log(result);
-      this.setState(result);
+      console.log(JSON.parse(result));
+      this.setState(JSON.parse(result));
   }
 
   executeViewUserAnswers(result){
@@ -124,22 +125,25 @@ class UserProfile extends React.Component{
         if(this.state.debug) {
           let DC = new DebugConstants();
           this.state.questions.push(DC.question);
+        } else {
+            $.ajax({
+                method: 'Get',
+                url: '/questions/'+result.questions[questionId],
+                data: {},
+                contentType: 'application/json',
+                success: (result)=> {console.log(result); this.state.questions.push(result.question)
+                      this.setState({questions: this.state.questions});
+                    ;},
+                error: function ajaxError(jqXHR, textStatus, errorThrown) {
+                }
+            });
         }
-        $.ajax({
-            method: 'Get',
-            url: '/questions/'+questionId,
-            data: {},
-            contentType: 'application/json',
-            success: (result)=> {this.state.questions.push(result.question);},
-            error: function ajaxError(jqXHR, textStatus, errorThrown) {
-            }
-        });
       }
-      this.setState({questions: this.state.questions});
   }
   
   render(){
     const { classes, theme } = this.props;
+    console.log(this.state);
     let answers = [];
     var answer;
     for (answer in this.state.answers) {
@@ -155,7 +159,10 @@ class UserProfile extends React.Component{
           <div className={classes.details} onClick={()=>{this.navigate('comicSeries');}}>
             <CardContent className={classes.content}>
               <Typography component="h5" variant="h4" align="left">
-                {this.state.user.username}
+                User: {this.userId}
+              </Typography>
+              <Typography variant="subtitle1" color="textSecondary" align="left">
+                Email: {this.state.user.email}
               </Typography>
               <Typography variant="subtitle1" color="textSecondary" align="left">
                 Reputation: {this.state.user.reputation}

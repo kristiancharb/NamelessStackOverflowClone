@@ -63,7 +63,7 @@ class App extends Component {
     }
 
     viewUser(id) {
-        this.setState({mode: (<ViewUserPage debug={this.state.debug} navigate={this.navigate} openQuestion={this.openQuestion} userId={id}/>)})
+        this.setState({mode: (<ViewUserPage debug={this.state.debug} viewUser={this.viewUser} navigate={this.navigate} openQuestion={this.openQuestion} userId={id}/>)})
     }
 
     navigate(destination){
@@ -72,7 +72,7 @@ class App extends Component {
         } else if (destination==='addQuestion') {
             this.setState({mode:(<AddQuestion debug={this.state.debug} navigate={this.navigate}/>)})
         } else if (destination==='search') {
-            this.setState({mode:(<Search openQuestion={this.openQuestion} debug={this.state.debug} navigate={this.navigate}/>)})
+            this.setState({mode:(<Search openQuestion={this.openQuestion} viewUser={this.viewUser} debug={this.state.debug} navigate={this.navigate}/>)})
         } else if (destination==='questions') {
             this.setState({mode:(<QuestionsContainer viewUser={this.viewUser} debug={this.state.debug}  openQuestion={this.openQuestion}/>)})
         } else if (destination==='register') {

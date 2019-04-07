@@ -2,15 +2,15 @@ import unittest
 import requests
 from __init__ import getUserId
 
-clientServer = 'http://localhost:5000'
 #open stack
 #clientServer = 'http://130.245.171.193'
 #userAccountDB = 'http://130.245.169.94'
 #vulture
-#clientServer = 'http://149.28.48.15'
+clientServer = 'http://149.28.48.15'
 #grading
-#clientServer = 'http://kristjamin.cse356.compas.cs.stonybrook.edu/'
+clientServer = 'http://kristjamin.cse356.compas.cs.stonybrook.edu/'
 userAccountDB = 'http://149.28.40.50'
+#clientServer = 'http://localhost:5000'
 
 class TestClientServer(unittest.TestCase):
     def testClientServerUp(self):
@@ -92,6 +92,23 @@ class TestClientServer(unittest.TestCase):
         self.assertEqual(getUserId(sessionId), '')
         cookies = dict(sessionId=sessionId)
         requests.post(userAccountDB+'/deleteUser', json={'email': email})
+
+    def testUserProfile(self):
+        username='testLogin'
+        password='testLogin'
+        email='testLogin@stonybrook.edu'
+        requests.post(userAccountDB+'/deleteUser', json={'email': email})
+        response = requests.get(clientServer+'/user/'+username)
+        self.assertEqual(response.json()['status'], 'error')
+        requests.post(clientServer+'/login', json={'username': username, 'password': password})
+        requests.post(clientServer+'/adduser', json={'username': username, 'password': password, 'email': email})
+        requests.post(clientServer+'/verify', json={'email': email, 'key': 'abracadabra'})
+        response = requests.get(clientServer+'/user/'+username)
+        self.assertEqual(response.json()['status'], 'OK')
+        self.assertEqual(response.json()['user']['email'], email)
+        self.assertEqual(response.json()['user']['reputation'], 1)
+        requests.post(userAccountDB+'/deleteUser', json={'email': email})
+
 
 
 if (__name__=='__main__'):
