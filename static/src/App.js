@@ -11,6 +11,7 @@ import Search from './pages/SearchPage'
 import {Error, errorStyle} from './components/error';
 import $ from 'jquery';
 import ViewQuestionPage from './pages/ViewQuestionPage';
+import ViewUserPage from './pages/ViewUserPage';
             
 
 class App extends Component {
@@ -24,6 +25,7 @@ class App extends Component {
         this.logInOut = this.logInOut.bind(this);
         this.executeLogin = this.executeLogin.bind(this);
         this.openQuestion = this.openQuestion.bind(this);
+        this.viewUser = this.viewUser.bind(this);
         this.state = {
             mode: (<div>Loading...</div>),
             debug: false,
@@ -53,11 +55,15 @@ class App extends Component {
                 }
             });
         } 
-        this.setState({mode:(<QuestionsContainer openQuestion={this.openQuestion}/>)})
+        this.setState({mode:(<QuestionsContainer viewUser={this.viewUser} debug={this.state.debug} openQuestion={this.openQuestion}/>)})
 	}
     
     openQuestion(id){
         this.setState({mode: (<ViewQuestionPage debug={this.state.debug} navigate={this.navigate} questionId={id}/>)})
+    }
+
+    viewUser(id) {
+        this.setState({mode: (<ViewUserPage debug={this.state.debug} navigate={this.navigate} openQuestion={this.openQuestion} userId={id}/>)})
     }
 
     navigate(destination){
@@ -66,9 +72,9 @@ class App extends Component {
         } else if (destination==='addQuestion') {
             this.setState({mode:(<AddQuestion debug={this.state.debug} navigate={this.navigate}/>)})
         } else if (destination==='search') {
-            this.setState({mode:(<Search debug={this.state.debug} navigate={this.navigate}/>)})
+            this.setState({mode:(<Search openQuestion={this.openQuestion} debug={this.state.debug} navigate={this.navigate}/>)})
         } else if (destination==='questions') {
-            this.setState({mode:(<QuestionsContainer openQuestion={this.openQuestion}/>)})
+            this.setState({mode:(<QuestionsContainer viewUser={this.viewUser} debug={this.state.debug}  openQuestion={this.openQuestion}/>)})
         } else if (destination==='register') {
             this.setState({mode:(<this.RegisterStyled debug={this.state.debug} navigate={this.navigate}/>)})
         } else if (destination==='verify') {

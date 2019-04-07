@@ -25,7 +25,6 @@ def isLoggedIn():
     else:
         return jsonify({'status':'OK'})
 
-
 @app.route("/")
 def hello():
     return render_template('index.html')
@@ -46,6 +45,10 @@ def addUser():
             return jsonify({'status':response.json()['status']}),201
     else:
         return jsonify({'status':'OK'})
+
+@app.route('/user/<username>', methods=['POST'])
+def addanswer(username):
+    return username
 
 @app.route("/verify", methods=['GET', 'POST'])
 def verify():

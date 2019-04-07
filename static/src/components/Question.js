@@ -1,4 +1,5 @@
 import React from 'react';
+import $ from 'jquery';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -28,8 +29,12 @@ const styles = {
 class Question extends React.Component{
     constructor(props){
         super(props);
+        this.state={
+            debug: props.debug,
+        };
         this.openQuestion=props.openQuestion;
         this.questionId = props.questionId;
+        this.viewUser = props.viewUser;
 
     }
     render() {
@@ -38,14 +43,19 @@ class Question extends React.Component{
         console.log(question)
 
         return (
-            <Card className={classes.card} onClick={()=>{this.openQuestion(question.id)}}>
+            <Card className={classes.card}>
                 <CardContent>
                     <Typography variant="h5" component="h2">
                         {question.title}
                     </Typography>
-                    <Typography className={classes.pos} color="textSecondary">
-                        By {question.user.username}
-                    </Typography>
+                    <Card onClick={()=>{this.viewUser(question.user.username)}}>
+                        <Typography className={classes.pos} color="textSecondary">
+                            By {question.user.username}
+                        </Typography>
+                        <Typography className={classes.pos} color="textSecondary">
+                            Reputation {question.user.reputation}
+                        </Typography>
+                    </Card>
                     <Typography component="p">
                         {question.body}
                     </Typography>
@@ -57,7 +67,23 @@ class Question extends React.Component{
                     </Typography>
                 </CardContent>
                 <CardActions>
-                    <Button size="small">View Answers</Button>
+                    <Button size="small" onClick={()=>{this.openQuestion(question.id)}}>View Answers</Button>
+                    <Button color={'secondary'} onClick={()=>{
+                        if (this.state.debug) {
+                            console.log("Question Deleted");
+                        }
+                        else {
+                            $.ajax({
+                                method: 'DELETE', 
+                                url: '/questions/'+this.question.id,
+                                data: {},
+                                contentType: 'application/json',
+                                success: () => {console.log("Deleted");},
+                                error: function ajaxError(jqXHR, textStatus, errorThrown) {
+                                }
+                            }); 
+                        }
+                    }}>Delete</Button>
                 </CardActions>
             </Card>
         );
