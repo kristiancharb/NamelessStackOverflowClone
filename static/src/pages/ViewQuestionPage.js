@@ -1,17 +1,13 @@
 import React from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import {Error, errorStyle} from '../components/error';
-import QuestionsContainer from '../components/QuestionsContainer'
 import Answer from '../components/Answer'
+import SubmitAnswer from '../components/SubmitAnswer'
 import $ from 'jquery';
+import DebugConstants from '../components/DebugConstants'
 
 const SearchStyles = theme => ({
     main: {
@@ -58,20 +54,12 @@ class Search extends React.Component {
         this.navigate = props.navigate;
         this.executeViewQuestion = this.executeViewQuestion.bind(this);
         this.executeViewAnswers = this.executeViewAnswers.bind(this);
+        this.loadAnswers = this.loadAnswers.bind(this);
     }
 
-    componentDidMount(){
+    loadAnswers(){
         if (!this.state.debug) {
-             $.ajax({
-                method: 'Get',
-                url: '/questions/'+this.questionId,
-                data: {},
-                contentType: 'application/json',
-                success: this.executeViewQuestion,
-                error: function ajaxError(jqXHR, textStatus, errorThrown) {
-                }
-            });
-            $.ajax({
+           $.ajax({
                 method: 'Get',
                 url: '/questions/'+this.questionId+'/answers',
                 data: {},
@@ -81,42 +69,30 @@ class Search extends React.Component {
                 }
             });
         } else {
-            this.executeViewQuestion({
-                user: {
-                    username: 'ben',
-                    reputation: 56,
-                },
-                title: 'this is the title',
-                body: 'this is the question',
-                score: 23,
-                view_count: "3000",
-                answer_count: "30",
-                timestamp: 29878812889,
-                media: [],
-                tags: ['tag1', 'tag2', 'tag3'],
-                accepted_answer_id: null,
-            });
+            let debugObj = new DebugConstants();
             this.executeViewAnswers({
-                answers: [
-                    {
-                        user: 'ben',
-                        body: 'this is the body of the answer',
-                        score: 6,
-                        is_accepted: false,
-                        timestamp: 12434234234,
-                        media: []
-                    },
-                    {
-                        user: 'ben',
-                        body: 'this is the body of the answer',
-                        score: 6,
-                        is_accepted: false,
-                        timestamp: 12434234234,
-                        media: []
-                    },
-                ]
+                answers: debugObj.answers,
             })
         }
+
+    }
+
+    componentDidMount(){
+        if (!this.state.debug) {
+            $.ajax({
+                method: 'Get',
+                url: '/questions/'+this.questionId,
+                data: {},
+                contentType: 'application/json',
+                success: this.executeViewQuestion,
+                error: function ajaxError(jqXHR, textStatus, errorThrown) {
+                }
+            });
+        } else {
+            let debugObj = new DebugConstants();
+            this.executeViewQuestion(debugObj.question);
+       }
+       this.loadAnswers();
     }
     
     executeViewQuestion(result){
@@ -144,11 +120,17 @@ class Search extends React.Component {
                 <Answer key={answer} answer={this.state.answers[answer]}/ >
             )
         }
+        answers.push(
+            <SubmitAnswer debug={this.debug} loadAnswers={this.loadAnswers} questionId={this.questionId}/>
+        )
         return (
             <div className={classes.main}>
                 <CssBaseline/>
                 <Paper className={classes.paper}>
                     {this.state.error}
+                    <Typography variant="h5" component="h2">
+                        {this.state.title}
+                    </Typography>
                     <Typography className={classes.pos} color="textSecondary">
                         By {this.state.user.username}
                     </Typography>

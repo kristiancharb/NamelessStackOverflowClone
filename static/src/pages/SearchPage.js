@@ -11,6 +11,8 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import {Error, errorStyle} from '../components/error';
 import QuestionsContainer from '../components/QuestionsContainer'
 import $ from 'jquery';
+import DebugConstants from '../components/DebugConstants';
+import Question from '../components/Question';
 
 const SearchStyles = theme => ({
     main: {
@@ -52,23 +54,29 @@ class Search extends React.Component {
             debug: props.debug,
         };
         this.navigate = props.navigate;
-        this.executeLogin = this.executeLogin.bind(this);
-        this.logInOut = props.logInOut;
+        this.executeSearch = this.executeSearch.bind(this);
+        this.openQuestion = props.openQuestion;
     }
 
-    executeLogin(result){
+    executeSearch(result){
         console.log(result);
         if(typeof(result.error)!=="undefined") {
             let ErrorStyled = withStyles(errorStyle)(Error);
             this.setState({error: (<ErrorStyled errorMessage={result.error} />)});
         }else {
-            this.logInOut();
-            this.navigate('questions');
+            this.setState(result);
         }
     }
 
     render () {
         const {classes} = this.props;
+        let questions = [];
+        var question;
+        for (question in this.state.questions) {
+            questions.push(
+              <Question question={this.state.questions[question]} debug={this.state.debug} viewUser={this.viewUser} openQuestion={this.openQuestion} questionId={question.id}/>
+            )
+        }
         return (
             <div className={classes.main}>
                 <CssBaseline/>
@@ -99,15 +107,16 @@ class Search extends React.Component {
                                 console.log(JSON.stringify(request));
                                 $.ajax({
                                     method: 'POST',
-                                    url: '/login',
+                                    url: '/search',
                                     data: JSON.stringify(request),
                                     contentType: 'application/json',
-                                    success: this.executeLogin,
+                                    success: this.executeSearch,
                                     error: function ajaxError(jqXHR, textStatus, errorThrown) {
                                     }
                                 });
                             } else {
-                                this.executeLogin({});
+                                let debugObj = new DebugConstants();
+                                this.executeSearch({questions: debugObj.questions,});
                             }
                         }
                         }
@@ -115,7 +124,7 @@ class Search extends React.Component {
                         Search
                     </Button>
                 </Paper>
-                <QuestionsContainer/>
+                {questions}
             </div>
         );
     }

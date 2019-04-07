@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Question from './Question'
+import DebugConstants from './DebugConstants'
 
 class QuestionsContainer extends Component {
     constructor(props) {
@@ -7,35 +8,45 @@ class QuestionsContainer extends Component {
         this.state = {
             error: null,
             isLoaded: false,
-            questions: []
+            questions: [],
+            debug: props.debug,
         };
         this.openQuestion=props.openQuestion;
+        this.viewUser=props.viewUser;
     }
 
     componentDidMount() {
-        fetch("http://63.209.35.124/search", {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({})
-        })
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.setState({
-                        isLoaded: true,
-                        questions: result.questions
-                    });
+        if(this.state.debug) {
+            let debug = new DebugConstants();
+            this.setState({
+                isLoaded: true,
+                questions:  debug.questions,
+            })
+        } else {
+            fetch("http://63.209.35.124/search", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
                 },
-                (error) => {
-                    this.setState({
-                        isLoaded: true,
-                        error
-                    });
-                }
-            )
+                body: JSON.stringify({})
+            })
+                .then(res => res.json())
+                .then(
+                    (result) => {
+                        this.setState({
+                            isLoaded: true,
+                            questions: result.questions
+                        });
+                    },
+                    (error) => {
+                        this.setState({
+                            isLoaded: true,
+                            error
+                        });
+                    }
+                )
+        }
     }
 
     render() {
@@ -47,7 +58,7 @@ class QuestionsContainer extends Component {
         } else {
             return questions.map((question) => (
                 <div>
-                    <Question question={question} openQuestion={this.openQuestion} questionId={question.id}/>
+                    <Question question={question} viewUser={this.viewUser} openQuestion={this.openQuestion} questionId={question.id}/>
                 </div>
             ))
         }
