@@ -75,7 +75,7 @@ class Question extends React.Component{
                         else {
                             $.ajax({
                                 method: 'DELETE', 
-                                url: '/questions/'+this.question.id,
+                                url: '/questions/'+question.id,
                                 data: {},
                                 contentType: 'application/json',
                                 success: () => {console.log("Deleted");},
