@@ -1,4 +1,5 @@
-from flask import (Flask, make_response, request, send_from_directory, render_template, jsonify, abort)
+import io
+from flask import (Flask, send_file, make_response, request, send_from_directory, render_template, jsonify, abort)
 import requests
 #openstack
 #postfixServer = 'http://130.245.171.187'
@@ -8,6 +9,7 @@ postfixServer = 'http://104.207.133.129'
 userAccountDB = 'http://149.28.40.50'
 questionServer = 'http://63.209.35.124'
 #questionServer = 'http://127.0.0.1:3000'
+imageServer = 'http://130.245.171.193'
 app = Flask(__name__, template_folder='./static/build', static_folder='./static/build/static')
 
 def getUserId(sessionId):
@@ -48,8 +50,8 @@ def addUser():
 
 @app.route('/user/<username>', methods=['GET'])
 def getUserProfile(username):
-    return requests.get(userAccountDB+'/user/'+username).text
-
+    response = requests.get(userAccountDB+'/user/'+username)
+    return jsonify(response.json())
 
 @app.route("/verify", methods=['GET', 'POST'])
 def verify():
@@ -80,7 +82,6 @@ def login():
             return clientResponse
     else:
         return render_template('login.html')
-
 
 @app.route("/logout", methods=['POST','GET'])
 def logout():
@@ -158,6 +159,24 @@ def search():
     data = request.json
     resp = requests.post(getQuestionServerUrl(request), json=data)
     return (resp.text, resp.status_code, resp.headers.items())
+
+
+@app.route('/addmedia', methods=['POST'])
+def addmedia():
+    filename = 'billy'
+    resp = requests.post(imageServer + '/deposit', files={'contents': request.files['content']},
+            data={'filename':filename})
+    return jsonify(resp.text)
+
+@app.route('/media/<id>', methods=['GET'])
+def getmedia(id):
+    resp = requests.get(imageServer + '/retrieve', params={'filename':id})
+    print(resp.headers.items())
+    response = send_file(io.BytesIO(resp.content),
+                         attachment_filename='billy',
+                         mimetype='')
+    return response
+#    return (resp.content, resp.status_code, resp.headers.items())
 
 
 if __name__ == "__main__":

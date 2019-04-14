@@ -109,8 +109,8 @@ class UserProfile extends React.Component{
   }
 
   executeViewUserProfile(result){
-      console.log(JSON.parse(result));
-      this.setState(JSON.parse(result));
+      console.log(result);
+      this.setState(result);
   }
 
   executeViewUserAnswers(result){

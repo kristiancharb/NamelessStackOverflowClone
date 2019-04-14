@@ -10,7 +10,7 @@ clientServer = 'http://149.28.48.15'
 #grading
 clientServer = 'http://kristjamin.cse356.compas.cs.stonybrook.edu/'
 userAccountDB = 'http://149.28.40.50'
-#clientServer = 'http://localhost:5000'
+clientServer = 'http://localhost:5000'
 
 class TestClientServer(unittest.TestCase):
     def testClientServerUp(self):

@@ -89,9 +89,17 @@ class Search extends React.Component {
                         Search
                     </Typography>
                     <form className={classes.form} id={"login"}>
-                        <FormControl margin="normal" required fullWidth>
+                        <FormControl margin="normal" fullWidth>
                             <InputLabel htmlFor="query">Query</InputLabel>
                             <Input name="query" type="query" id="query" autoComplete="query"/>
+                        </FormControl>
+                        <FormControl margin="normal" fullWidth>
+                            <InputLabel htmlFor="limit">Search Return Limit</InputLabel>
+                            <Input name="limit" type="limit" id="limit" autoComplete="limit"/>
+                        </FormControl>
+                        <FormControl margin="normal" fullWidth>
+                            <InputLabel htmlFor="timestamp">Timestamp</InputLabel>
+                            <Input name="timestamp" type="timestamp" id="timestamp" autoComplete="timestamp"/>
                         </FormControl>
                     </form>
                     <Button
@@ -102,9 +110,16 @@ class Search extends React.Component {
                         onClick={() => {
                             if (!this.state.debug) {
                                 var formData = $("#login").serializeArray();
-                                var request = {
-                                    q: formData[0].value,
-                                };
+                                var request = {}
+                                if(formData[0].value != '') {
+                                    request.q = formData[0].value;
+                                }
+                                if(formData[1].value != '') {
+                                    request.limit = formData[1].value;
+                                }
+                                if(formData[2].value != '') {
+                                    request.timestamp = formData[2].value;
+                                }
                                 console.log(JSON.stringify(request));
                                 $.ajax({
                                     method: 'POST',
