@@ -136,16 +136,16 @@ def getQuestion(id):
     else:
         # get all the question media files and delete them
         resp = requests.get(getQuestionServerUrl(request), params={ 'user': user})
-        media = resp.json['media']
+        media = resp.json()['question']['media']
         for id in media:
-            mediaDeleteResp = requests.post(imageServer + '/delete', json={filename: id})
+            mediaDeleteResp = requests.post(imageServer + '/delete', json={'filename': id})
         # get all the answers from the question
         answersResp = requests.get(getQuestionServerUrl(request) + '/answers')
-        for answer in answerResp.json['answers']:
+        for answer in answersResp.json()['answers']:
             # get and delete media from all the answers
-            for id in answer.json['media']:
-                mediaDeleteResp = requests.post(imageServer + '/delete', json={filename: id})
-            
+            for id in answer['media']:
+                mediaDeleteResp = requests.post(imageServer + '/delete', json={'filename': id})
+        # delete the question from the server    
         resp = requests.delete(getQuestionServerUrl(request), params={ 'user': user})
         if resp.status_code == 200:
             return 'Success', 200
@@ -176,10 +176,15 @@ def search():
 
 @app.route('/addmedia', methods=['POST'])
 def addmedia():
-    filename = 'insert'
-    resp = requests.post(imageServer + '/deposit', files={'contents': request.files['content']},
-            data={'filename':filename})
-    return (resp.text, resp.status_code, resp.headers.items())
+    #check logged in
+    sessionId = request.cookies.get('sessionId')
+    if(getUserId(sessionId)==''):
+        return jsonify({'status':'error', 'error':'User not logged in'}),408
+    else:
+        filename = 'insert'
+        resp = requests.post(imageServer + '/deposit', files={'contents': request.files['content']},
+                data={'filename':filename})
+        return (resp.text, resp.status_code, resp.headers.items())
 
 @app.route('/media/<id>', methods=['GET'])
 def getmedia(id):
