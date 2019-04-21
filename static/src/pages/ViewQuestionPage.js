@@ -117,19 +117,23 @@ class Search extends React.Component {
         var answer;
         for (answer in this.state.answers) {
             answers.push(
-                <Answer key={answer} answer={this.state.answers[answer]}/ >
+                <Answer key={answer} answer={this.state.answers[answer]} />
             )
         }
         answers.push(
             <SubmitAnswer debug={this.debug} loadAnswers={this.loadAnswers} questionId={this.questionId}/>
         )
+        let media = [];
+        for (let file in this.state.question.media) {
+            media.push(<a href={'/media/'+this.state.question.media[file]} target="_blank">{this.state.question.media[file]}</a>)
+        }
         return (
             <div className={classes.main}>
                 <CssBaseline/>
                 <Paper className={classes.paper}>
                     {this.state.error}
                     <Typography variant="h5" component="h2">
-                        {this.state.title}
+                        {this.state.question.title}
                     </Typography>
                     <Typography className={classes.pos} color="textSecondary">
                         By {this.state.question.user.username}
@@ -146,6 +150,7 @@ class Search extends React.Component {
                     <Typography className={classes.title} color="textSecondary" gutterBottom>
                         {tags}
                     </Typography>
+                    {media}
                 </Paper>
                 {answers}
             </div>

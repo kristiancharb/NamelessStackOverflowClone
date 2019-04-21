@@ -13,6 +13,10 @@ const styles = theme => ({
         marginTop: theme.spacing.unit * 3,
         padding: theme.spacing.unit * 3,
     },
+    input: {
+        display: 'none',
+        margin:20,
+    }
 });
 
 class SubmitAnswer extends React.Component {
@@ -44,6 +48,28 @@ class SubmitAnswer extends React.Component {
                     <FormControl margin="answer" required fullWidth>
                         <InputLabel htmlFor="answer">Answer</InputLabel>
                         <Input name="answer" type="answer" id="answer" autoComplete="answer"/>
+                    </FormControl>
+                </form>
+                <form className={classes.form} id={"fileForm"}>
+                    <FormControl margin="normal" required fullWidth>
+                        <input
+                            type='file'
+                            id={'files'}
+                            name="file"
+                            label='file'
+                            multiple
+                            className={classes.input}
+                        />
+                        <label htmlFor = 'files'>
+                            <Button
+                                fullWidth
+                                color = "primary"
+                                raised
+                                component = "span"
+                            >
+                                Upload files
+                            </Button>
+                        </label>
                     </FormControl>
                 </form>
                 <Button onClick={()=> {

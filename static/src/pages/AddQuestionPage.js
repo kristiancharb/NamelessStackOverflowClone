@@ -40,6 +40,10 @@ const styles = theme => ({
     submit: {
         marginTop: theme.spacing.unit * 3,
     },
+    input: {
+        display: 'none',
+        margin:20,
+    }
 });
 
 class AddQuestion extends React.Component {
@@ -87,6 +91,28 @@ class AddQuestion extends React.Component {
                             <Input name="tag" type="tag" id="tag" autoComplete="tag"/>
                         </FormControl>
                     </form>
+                    <form className={classes.form} id={"fileForm"}>
+                        <FormControl margin="normal" required fullWidth>
+                            <input
+                                type='file'
+                                id={'files'}
+                                name="file"
+                                label='file'
+                                multiple
+                                className={classes.input}
+                            />
+                            <label htmlFor = 'files'>
+                                <Button
+                                    fullWidth
+                                    color = "primary"
+                                    raised
+                                    component = "span"
+                                >
+                                    Upload files
+                                </Button>
+                            </label>
+                        </FormControl>
+                    </form>
                     <Button
                         fullWidth
                         variant="contained"
@@ -98,12 +124,44 @@ class AddQuestion extends React.Component {
                                     this.executeAddQuestion({});
                                     let formData = $("#questionForm").serializeArray();
                                     console.log(formData[2].value.split(","));
+                                    let files = document.getElementById('fileForm');
+                                    let fileData = new FormData(files);
+                                    let fileCount = 0;
+                                    for (let pair of fileData.entries()) {
+                                        console.log("File: "+ (fileCount++));
+                                        console.log(pair[0]+', '+pair[1]);
+                                    }
                                 } else {
+                                    //Upload the files
+                                    let files = document.getElementById('fileForm');
+                                    let fileData = new FormData(files);
+                                    let fileCount = 0;
+                                    let fileIds = [];
+                                    for (let pair of fileData.entries()) {
+                                        console.log("File: "+ (fileCount++));
+                                        console.log(pair[0]+', '+pair[1]);
+                                        let tempFileData = new FormData();
+                                        tempFileData.append('filename', pair[1]);
+                                        $.ajax({
+                                            method: 'POST',
+                                            url: '/addmedia',
+                                            data: tempFileData,
+                                            contentType: false,
+                                            processData: false,
+                                            async: false,
+                                            success: (response) => {console.log(response); fileIds.append(response.id); this.props.viewComic(response.id);},
+                                            error: function ajaxError(jqXHR, textStatus, errorThrown) {
+                                            }
+                                        })
+                                    }
+
+                                    //Upload the question
                                     var formData = $("#questionForm").serializeArray();
                                     var request = {
                                         title: formData[0].value,
                                         body: formData[1].value,
-                                        tags: formData[2].value.split(",")
+                                        tags: formData[2].value.split(","),
+                                        media: fileIds,
                                     };
                                     console.log(JSON.stringify(request));
                                     $.ajax({

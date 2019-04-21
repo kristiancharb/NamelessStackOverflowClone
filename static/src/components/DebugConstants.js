@@ -19,19 +19,22 @@ class DebugConstants {
                     },
                 ];
         this.question={
-                user: {
-                    username: 'ben',
-                    reputation: 56,
-                },
-                title: 'this is the title',
-                body: 'this is the question',
-                score: 23,
-                view_count: "3000",
-                answer_count: "30",
-                timestamp: 29878812889,
-                media: [],
-                tags: ['tag1', 'tag2', 'tag3'],
-                accepted_answer_id: null,
+                status: "OK",
+                question: {
+                    user: {
+                        username: 'ben',
+                        reputation: 56,
+                    },
+                    title: 'this is the title',
+                    body: 'this is the question',
+                    score: 23,
+                    view_count: "3000",
+                    answer_count: "30",
+                    timestamp: 29878812889,
+                    media: ['media1', 'media2', 'media3'],
+                    tags: ['tag1', 'tag2', 'tag3'],
+                    accepted_answer_id: null,
+                }
             };
         this.questions = 
             [
