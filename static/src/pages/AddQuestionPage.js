@@ -141,7 +141,10 @@ class AddQuestion extends React.Component {
                                         console.log("File: "+ (fileCount++));
                                         console.log(pair[0]+', '+pair[1]);
                                         let tempFileData = new FormData();
-                                        tempFileData.append('filename', pair[1]);
+                                        tempFileData.append('content', pair[1]);
+                                        for (let pair of tempFileData.entries()) {
+                                            console.log(pair[0]+', '+pair[1]);
+                                        }
                                         $.ajax({
                                             method: 'POST',
                                             url: '/addmedia',
@@ -149,11 +152,12 @@ class AddQuestion extends React.Component {
                                             contentType: false,
                                             processData: false,
                                             async: false,
-                                            success: (response) => {console.log(response); fileIds.append(response.id); this.props.viewComic(response.id);},
+                                            success: (response) => {console.log(response); console.log(response.id);console.log(response['id']); fileIds.push(response.id); },
                                             error: function ajaxError(jqXHR, textStatus, errorThrown) {
                                             }
                                         })
                                     }
+                                    console.log(fileIds)
 
                                     //Upload the question
                                     var formData = $("#questionForm").serializeArray();

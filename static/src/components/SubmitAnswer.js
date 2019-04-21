@@ -76,9 +76,37 @@ class SubmitAnswer extends React.Component {
                     if(this.debug){
                         this.executeSubmitAnswer({});
                     }else {
+                        //Upload the files
+                        let files = document.getElementById('fileForm');
+                        let fileData = new FormData(files);
+                        let fileCount = 0;
+                        let fileIds = [];
+                        for (let pair of fileData.entries()) {
+                            console.log("File: "+ (fileCount++));
+                            console.log(pair[0]+', '+pair[1]);
+                            let tempFileData = new FormData();
+                            tempFileData.append('content', pair[1]); for (let pair of tempFileData.entries()) {
+                                console.log(pair[0]+', '+pair[1]);
+                            }
+                            $.ajax({
+                                method: 'POST',
+                                url: '/addmedia',
+                                data: tempFileData,
+                                contentType: false,
+                                processData: false,
+                                async: false,
+                                success: (response) => {console.log(response); console.log(response.id);console.log(response['id']); fileIds.push(response.id); },
+                                error: function ajaxError(jqXHR, textStatus, errorThrown) {
+                                }
+                            })
+                        }
+                        console.log(fileIds)
+
+                        //uploads the answer
                         var formData = $("#answer").serializeArray();
                         var request = {
                             body: formData[0].value,
+                            media: fileIds,
                         };
                         console.log(JSON.stringify(request));
                         $.ajax({

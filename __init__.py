@@ -10,6 +10,7 @@ userAccountDB = 'http://149.28.40.50'
 questionServer = 'http://63.209.35.124'
 #questionServer = 'http://127.0.0.1:3000'
 imageServer = 'http://130.245.171.193'
+imageServer = 'http://207.148.28.251'
 app = Flask(__name__, template_folder='./static/build', static_folder='./static/build/static')
 
 def getUserId(sessionId):
@@ -23,7 +24,7 @@ def getUserId(sessionId):
 def isLoggedIn():
     sessionId = request.cookies.get('sessionId')
     if(getUserId(sessionId)==''):
-        return jsonify({'status':'error', 'error':'User not logged in'}),201
+        return jsonify({'status':'error', 'error':'User not logged in'}),408
     else:
         return jsonify({'status':'OK'})
 
@@ -41,7 +42,7 @@ def addUser():
         email = request.json['email']
         response = requests.post(userAccountDB+'/adduser', json={'username': username, 'password': password, 'email': email})
         if(response.json()['status']=='ERROR'):
-            return jsonify({'status':'error', 'error':'Could not add user'}),201
+            return jsonify({'status':'error', 'error':'Could not add user'}),408
         else:
             response = requests.post(postfixServer+'/verify', json={'username': username, 'verificationCode': response.json()['verificationCode'], 'email': email})
             return jsonify({'status':response.json()['status']}),201
@@ -64,7 +65,7 @@ def verify():
         if(response.json()['status']=='OK'):
             return jsonify({'status':'OK'}),201
         else:
-            return jsonify({'status':'error', 'error':'Could not verify user'}),201
+            return jsonify({'status':'error', 'error':'Could not verify user'}),408
     else:
         return jsonify({'status':'OK'})
 
@@ -75,7 +76,7 @@ def login():
         password = request.json['password']
         response = requests.post(userAccountDB+'/login', json={'username': username, 'password': password})
         if(response.json()['status']=='ERROR'):
-            return jsonify({'status':'error', 'error':'Could not login'}),201
+            return jsonify({'status':'error', 'error':'Could not login'}),408
         else:
             clientResponse = make_response(jsonify({'status':'OK'}),201)
             clientResponse.set_cookie('sessionId', response.json()['sessionId'])
@@ -88,14 +89,14 @@ def logout():
     if (request.method == 'POST'):
         sessionId = request.cookies.get('sessionId')
         if(sessionId==''):
-            return jsonify({'status':'error', 'error':'User not logged in'}),201
+            return jsonify({'status':'error', 'error':'User not logged in'}),408
         response = requests.post(userAccountDB+'/logout', json={'sessionID': sessionId})
         if(response.json()['status']=='OK'):
             clientResponse = make_response(jsonify({'status':'OK'}),201)
             clientResponse.set_cookie('sessionId', '', expires=0)
             return clientResponse
         else:
-            return jsonify({'status':'error', 'error':'Could not logout'}),201
+            return jsonify({'status':'error', 'error':'Could not logout'}),408
     return jsonify({'status':'OK'})
 
 def getQuestionServerUrl(request):
@@ -133,6 +134,18 @@ def getQuestion(id):
         resp = requests.get(getQuestionServerUrl(request), params={ 'user': user})
         return (resp.text, resp.status_code, resp.headers.items())
     else:
+        # get all the question media files and delete them
+        resp = requests.get(getQuestionServerUrl(request), params={ 'user': user})
+        media = resp.json['media']
+        for id in media:
+            mediaDeleteResp = requests.post(imageServer + '/delete', json={filename: id})
+        # get all the answers from the question
+        answersResp = requests.get(getQuestionServerUrl(request) + '/answers')
+        for answer in answerResp.json['answers']:
+            # get and delete media from all the answers
+            for id in answer.json['media']:
+                mediaDeleteResp = requests.post(imageServer + '/delete', json={filename: id})
+            
         resp = requests.delete(getQuestionServerUrl(request), params={ 'user': user})
         if resp.status_code == 200:
             return 'Success', 200
@@ -163,17 +176,17 @@ def search():
 
 @app.route('/addmedia', methods=['POST'])
 def addmedia():
-    filename = 'billy'
+    filename = 'insert'
     resp = requests.post(imageServer + '/deposit', files={'contents': request.files['content']},
             data={'filename':filename})
-    return jsonify(resp.text)
+    return (resp.text, resp.status_code, resp.headers.items())
 
 @app.route('/media/<id>', methods=['GET'])
 def getmedia(id):
     resp = requests.get(imageServer + '/retrieve', params={'filename':id})
     print(resp.headers.items())
     response = send_file(io.BytesIO(resp.content),
-                         attachment_filename='billy',
+                         attachment_filename=id,
                          mimetype='')
     return response
 #    return (resp.content, resp.status_code, resp.headers.items())

@@ -16,10 +16,15 @@ class Answer extends React.Component {
         this.user = this.props.answer.user;
         this.body = this.props.answer.body;
         this.score = this.props.answer.score;
+        this.media = this.props.answer.media;
     }
 
     render(){
         const {classes} = this.props;
+        let media = [];
+        for (let file in this.state.question.media) {
+            media.push(<a href={'/media/'+this.state.question.media[file]} target="_blank">{this.state.question.media[file]}</a>)
+        }
         return (
             <Paper className={classes.main}>
                 <Typography>
@@ -31,6 +36,7 @@ class Answer extends React.Component {
                 <Typography>
                     {this.score}
                 </Typography>
+                {media}
             </Paper>
         )
     }
