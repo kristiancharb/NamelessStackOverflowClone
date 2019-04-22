@@ -11,10 +11,11 @@ questionServer = 'http://63.209.35.124'
 #questionServer = 'http://127.0.0.1:3000'
 imageServer = 'http://130.245.171.193'
 imageServer = 'http://207.148.28.251'
+cacheServer = 'http://107.191.41.77'
 app = Flask(__name__, template_folder='./static/build', static_folder='./static/build/static')
 
 def getUserId(sessionId):
-    response = requests.post(userAccountDB+'/getUserId', json={'sessionId':sessionId})
+    response = requests.post(cacheServer+'/getUserId', json={'sessionId':sessionId})
     if(response.json()['status']=='OK'):
         return response.json()['userId']
     else:
@@ -24,7 +25,7 @@ def getUserId(sessionId):
 def isLoggedIn():
     sessionId = request.cookies.get('sessionId')
     if(getUserId(sessionId)==''):
-        return jsonify({'status':'error', 'error':'User not logged in'}),408
+        return jsonify({'status':'error', 'error':'User not logged in'}),400
     else:
         return jsonify({'status':'OK'})
 
@@ -139,12 +140,14 @@ def getQuestion(id):
         media = resp.json()['question']['media']
         for id in media:
             mediaDeleteResp = requests.post(imageServer + '/delete', json={'filename': id})
+        print("Question Media Deleted")
         # get all the answers from the question
         answersResp = requests.get(getQuestionServerUrl(request) + '/answers')
         for answer in answersResp.json()['answers']:
             # get and delete media from all the answers
             for id in answer['media']:
                 mediaDeleteResp = requests.post(imageServer + '/delete', json={'filename': id})
+        print("Answer Media Deleted")
         # delete the question from the server    
         resp = requests.delete(getQuestionServerUrl(request), params={ 'user': user})
         if resp.status_code == 200:
@@ -179,7 +182,7 @@ def addmedia():
     #check logged in
     sessionId = request.cookies.get('sessionId')
     if(getUserId(sessionId)==''):
-        return jsonify({'status':'error', 'error':'User not logged in'}),408
+        return jsonify({'status':'error', 'error':'User not logged in'}),400
     else:
         filename = 'insert'
         resp = requests.post(imageServer + '/deposit', files={'contents': request.files['content']},
