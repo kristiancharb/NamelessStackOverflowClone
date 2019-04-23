@@ -22,8 +22,8 @@ class Answer extends React.Component {
     render(){
         const {classes} = this.props;
         let media = [];
-        for (let file in this.state.question.media) {
-            media.push(<a href={'/media/'+this.state.question.media[file]} target="_blank">{this.state.question.media[file]}</a>)
+        for (let file in this.props.answer.media) {
+            media.push(<a href={'/media/'+this.props.answer.media[file]} target="_blank">{this.props.answer.media[file]}</a>)
         }
         return (
             <Paper className={classes.main}>

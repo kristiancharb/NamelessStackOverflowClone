@@ -10,7 +10,7 @@ clientServer = 'http://149.28.48.15'
 #grading
 clientServer = 'http://kristjamin.cse356.compas.cs.stonybrook.edu/'
 userAccountDB = 'http://149.28.40.50'
-clientServer = 'http://localhost:5000'
+#clientServer = 'http://localhost:5000'
 
 class TestClientServer(unittest.TestCase):
     def testClientServerUp(self):
@@ -78,7 +78,7 @@ class TestClientServer(unittest.TestCase):
         requests.post(userAccountDB+'/deleteUser', json={'email': email})
  
     def testGetUserId(self):
-        username = 'henry'
+        username = 'bobby'
         password = 'password'
         email = 'benjamin.yu.1@stonybrook.edu'
         requests.post(userAccountDB+'/deleteUser', json={'email': email})
@@ -86,7 +86,7 @@ class TestClientServer(unittest.TestCase):
         requests.post(clientServer+'/verify', json={'email': email, 'key': 'abracadabra'})
         response = requests.post(clientServer+'/login', json={'username': username, 'password': password})
         sessionId = response.cookies['sessionId']
-        self.assertEqual(getUserId(sessionId), 'henry')
+        self.assertEqual(getUserId(sessionId), 'bobby')
         cookies = dict(sessionId=sessionId)
         response = requests.post(clientServer+'/logout',cookies=cookies) 
         self.assertEqual(getUserId(sessionId), '')
