@@ -52,7 +52,14 @@ def addUser():
 @app.route('/user/<username>', methods=['GET'])
 def getUserProfile(username):
     response = requests.get(userAccountDB+'/user/'+username)
-    return jsonify(response.json())
+    if not response.json() or response.json().get('status') != 'OK':
+        abort(400)
+    else:
+        user_resp = response.json()
+        response = requests.get(questionServer+'/user/'+username)
+        user_resp['user']['reputation'] = response.json().get('reputation', 1)
+        return jsonify(user_resp)
+
 
 @app.route("/verify", methods=['GET', 'POST'])
 def verify():
@@ -159,6 +166,8 @@ def addAnswer(id):
     if sessionId is not None:
         user = getUserId(sessionId)
         data['user'] = user
+    else:
+        abort(400)
     resp = requests.post(getQuestionServerUrl(request), json=data)
     return (resp.text, resp.status_code, resp.headers.items())
 
@@ -170,6 +179,42 @@ def getAnswers(id):
 @app.route('/search', methods=['POST'])
 def search():
     data = request.json
+    resp = requests.post(getQuestionServerUrl(request), json=data)
+    return (resp.text, resp.status_code, resp.headers.items())
+
+@app.route('/questions/<question_id>/upvote', methods=['POST'])
+def upvoteQuestion(question_id):
+    sessionId = request.cookies.get('sessionId')
+    data = request.json
+    if sessionId is not None:
+        user = getUserId(sessionId)
+        data['user'] = user
+    else:
+        abort(400)
+    resp = requests.post(getQuestionServerUrl(request), json=data)
+    return (resp.text, resp.status_code, resp.headers.items())
+
+@app.route('/answers/<answer_id>/upvote', methods=['POST'])
+def upvoteAnswer(answer_id):
+    sessionId = request.cookies.get('sessionId')
+    data = request.json
+    if sessionId is not None:
+        user = getUserId(sessionId)
+        data['user'] = user
+    else:
+        abort(400)
+    resp = requests.post(getQuestionServerUrl(request), json=data)
+    return (resp.text, resp.status_code, resp.headers.items())
+
+@app.route('/answers/<answer_id>/accept', methods=['POST'])
+def acceptAnswer(answer_id):
+    sessionId = request.cookies.get('sessionId')
+    data = request.json
+    if sessionId is not None:
+        user = getUserId(sessionId)
+        data['user'] = user
+    else:
+        abort(400)
     resp = requests.post(getQuestionServerUrl(request), json=data)
     return (resp.text, resp.status_code, resp.headers.items())
 
