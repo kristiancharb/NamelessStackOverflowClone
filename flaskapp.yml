@@ -3,7 +3,7 @@
   gather_facts: False
   sudo: yes
   vars: 
-    domain: kristjamin.cse356.compas.cs.stonybrook.edu
+    domain: 149.28.48.15
       
   tasks:
   - name: install python setuptools
