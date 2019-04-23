@@ -43,7 +43,7 @@ def addUser():
         email = request.json['email']
         response = requests.post(userAccountDB+'/adduser', json={'username': username, 'password': password, 'email': email})
         if(response.json()['status']=='ERROR'):
-            return jsonify({'status':'error', 'error':'Could not add user'}),408
+            return jsonify({'status':'error', 'error':'Could not add user'}),400
         else:
             response = requests.post(postfixServer+'/verify', json={'username': username, 'verificationCode': response.json()['verificationCode'], 'email': email})
             return jsonify({'status':response.json()['status']}),201
@@ -66,7 +66,7 @@ def verify():
         if(response.json()['status']=='OK'):
             return jsonify({'status':'OK'}),201
         else:
-            return jsonify({'status':'error', 'error':'Could not verify user'}),408
+            return jsonify({'status':'error', 'error':'Could not verify user'}),400
     else:
         return jsonify({'status':'OK'})
 
@@ -77,7 +77,7 @@ def login():
         password = request.json['password']
         response = requests.post(userAccountDB+'/login', json={'username': username, 'password': password})
         if(response.json()['status']=='ERROR'):
-            return jsonify({'status':'error', 'error':'Could not login'}),408
+            return jsonify({'status':'error', 'error':'Could not login'}),400
         else:
             clientResponse = make_response(jsonify({'status':'OK'}),201)
             clientResponse.set_cookie('sessionId', response.json()['sessionId'])
@@ -90,14 +90,14 @@ def logout():
     if (request.method == 'POST'):
         sessionId = request.cookies.get('sessionId')
         if(sessionId==''):
-            return jsonify({'status':'error', 'error':'User not logged in'}),408
+            return jsonify({'status':'error', 'error':'User not logged in'}),400
         response = requests.post(userAccountDB+'/logout', json={'sessionID': sessionId})
         if(response.json()['status']=='OK'):
             clientResponse = make_response(jsonify({'status':'OK'}),201)
             clientResponse.set_cookie('sessionId', '', expires=0)
             return clientResponse
         else:
-            return jsonify({'status':'error', 'error':'Could not logout'}),408
+            return jsonify({'status':'error', 'error':'Could not logout'}),400
     return jsonify({'status':'OK'})
 
 def getQuestionServerUrl(request):
