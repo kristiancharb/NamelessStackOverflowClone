@@ -28,6 +28,8 @@
     pip: name=Flask 
   - name: install requests
     pip: name=requests 
+  - name: delete default conf file
+    raw: rm /etc/apache2/sites-available/000-default.conf
   - name: configure virtual host
     template:
       src: FlaskApp.conf
