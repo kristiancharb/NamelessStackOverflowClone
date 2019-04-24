@@ -9,8 +9,8 @@ postfixServer = 'http://104.207.133.129'
 userAccountDB = 'http://149.28.40.50'
 questionServer = 'http://63.209.35.124'
 #questionServer = 'http://127.0.0.1:3000'
-imageServer = 'http://130.245.171.193'
-imageServer = 'http://207.148.28.251'
+#imageServer = 'http://130.245.171.193'
+imageServer = 'http://207.246.85.153'
 cacheServer = 'http://107.191.41.77'
 app = Flask(__name__, template_folder='./static/build', static_folder='./static/build/static')
 
@@ -128,6 +128,12 @@ def addQuestion():
     if sessionId is not None:
         user = getUserId(sessionId)
         data['user'] = user
+        #check if media files can be added
+        if ('media' in request.json.keys()):
+            for mediaId in request.json['media']:
+                resp = requests.get(imageServer + '/checkMedia', params={'filename': mediaId, 'userId': user})
+                if (resp.json()['status'] != 'OK'):
+                    return jsonify({'status': 'error', 'error': 'could not add media'}), 400
     resp = requests.post(getQuestionServerUrl(request), json=data)
     return (resp.text, resp.status_code, resp.headers.items())
 
@@ -169,6 +175,12 @@ def addAnswer(id):
     if sessionId is not None:
         user = getUserId(sessionId)
         data['user'] = user
+        #check if media files can be added
+        if ('media' in request.json.keys()):
+            for mediaId in request.json['media']:
+                resp = requests.get(imageServer + '/checkMedia', params={'filename': mediaId, 'userId': user})
+                if (resp.json()['status'] != 'OK'):
+                    return jsonify({'status': 'error', 'error': 'could not add media'}), 400
     else:
         abort(400)
     resp = requests.post(getQuestionServerUrl(request), json=data)
@@ -226,12 +238,13 @@ def acceptAnswer(answer_id):
 def addmedia():
     #check logged in
     sessionId = request.cookies.get('sessionId')
-    if(getUserId(sessionId)==''):
+    user = getUserId(sessionId)
+    if(user==''):
         return jsonify({'status':'error', 'error':'User not logged in'}),400
     else:
         filename = 'insert'
         resp = requests.post(imageServer + '/deposit', files={'contents': request.files['content']},
-                data={'filename':filename})
+                data={'filename':filename, 'userId':user})
         return (resp.text, resp.status_code, resp.headers.items())
 
 @app.route('/media/<id>', methods=['GET'])
