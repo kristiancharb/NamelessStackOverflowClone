@@ -15,7 +15,7 @@ cacheServer = 'http://107.191.41.77'
 app = Flask(__name__, template_folder='./static/build', static_folder='./static/build/static')
 
 def getUserId(sessionId):
-    response = requests.post(cacheServer+'/getUserId', json={'sessionId':sessionId})
+    response = requests.post(userAccountDB+'/getUserId', json={'sessionId':sessionId})
     if(response.json()['status']=='OK'):
         return response.json()['userId']
     else:
