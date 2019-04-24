@@ -1,6 +1,7 @@
 import io
 from flask import (Flask, send_file, make_response, request, send_from_directory, render_template, jsonify, abort)
 import requests
+import pylibmc
 #openstack
 #postfixServer = 'http://130.245.171.187'
 #userAccountDB = 'http://130.245.169.94'
@@ -13,13 +14,23 @@ imageServer = 'http://130.245.171.193'
 imageServer = 'http://207.148.28.251'
 cacheServer = 'http://107.191.41.77'
 app = Flask(__name__, template_folder='./static/build', static_folder='./static/build/static')
+mc = pylibmc.Client(["127.0.0.1"], binary=True,
+                     behaviors={"tcp_nodelay": True,
+                                "ketama": True})
 
 def getUserId(sessionId):
-    response = requests.post(cacheServer+'/getUserId', json={'sessionId':sessionId})
-    if(response.json()['status']=='OK'):
-        return response.json()['userId']
+    print(sessionId)
+    if sessionId in mc:
+        print('hit')
+        return mc[sessionId]
     else:
-        return ''
+        response = requests.post(cacheServer+'/getUserId', json={'sessionId':sessionId})
+        if(response.json()['status']=='OK'):
+            print('miss')
+            mc[sessionId] = response.json()['userId']
+            return response.json()['userId']
+        else:
+            return ''
 
 @app.route("/isLoggedIn", methods=['POST'])
 def isLoggedIn():
@@ -135,7 +146,8 @@ def addQuestion():
 def getQuestion(id):
     sessionId = request.cookies.get('sessionId')
     if sessionId is None:
-        user = request.remote_addr
+        user = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+        print(user) 
     else:
         user = getUserId(sessionId)
     if request.method == 'GET':
@@ -144,6 +156,8 @@ def getQuestion(id):
     else:
         # get all the question media files and delete them
         resp = requests.get(getQuestionServerUrl(request), params={ 'user': user})
+        if resp.status_code != 200:
+            abort(400)
         media = resp.json()['question']['media']
         for id in media:
             mediaDeleteResp = requests.post(imageServer + '/delete', json={'filename': id})

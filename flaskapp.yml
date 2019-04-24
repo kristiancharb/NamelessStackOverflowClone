@@ -3,7 +3,7 @@
   gather_facts: False
   sudo: yes
   vars: 
-    domain: 149.28.48.15
+    domain: 8.12.18.74
       
   tasks:
   - name: install python setuptools
@@ -20,6 +20,10 @@
     apt: name=nodejs update_cache=yes state=latest
   - name: install npm
     apt: name=npm update_cache=yes state=latest
+  - name: install memcached
+    apt: name=memcached update_cache=yes state=latest
+  - name: install libmemcached
+    apt: name=libmemcached-dev update_cache=yes state=latest
   - name: enable mod_wsgi
     raw: a2enmod wsgi
   - name: install pip
@@ -28,6 +32,8 @@
     pip: name=Flask 
   - name: install requests
     pip: name=requests 
+  - name: install pylibmc
+    pip: name=pylibmc
   - name: delete old config
     file:
       path: /etc/apache2/sites-available/000-default.conf
