@@ -5,13 +5,17 @@ import requests
 #postfixServer = 'http://130.245.171.187'
 #userAccountDB = 'http://130.245.169.94'
 #vulture
-postfixServer = 'http://104.207.133.129'
-userAccountDB = 'http://149.28.40.50'
+#postfixServer = 'http://104.207.133.129'
+#userAccountDB = 'http://149.28.40.50'
 questionServer = 'http://63.209.35.124'
 #questionServer = 'http://127.0.0.1:3000'
-#imageServer = 'http://130.245.171.193'
-imageServer = 'http://207.246.85.153'
-cacheServer = 'http://107.191.41.77'
+#imageServer = 'http://207.246.85.153'
+#cacheServer = 'http://107.191.41.77'
+#Grading
+postfixServer = 'http://130.245.170.128'
+imageServer = 'http://130.245.170.186'
+userAccountDB = 'http://130.245.170.194'
+
 app = Flask(__name__, template_folder='./static/build', static_folder='./static/build/static')
 
 def getUserId(sessionId):
