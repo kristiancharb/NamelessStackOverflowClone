@@ -6,6 +6,7 @@ import random
 #postfixServer = 'http://130.245.171.187'
 #userAccountDB = 'http://130.245.169.94'
 #vulture
+<<<<<<< HEAD
 postfixServer = 'http://192.168.122.32'
 userAccountDB = 'http://192.168.122.34'
 questionServer = 'http://192.168.122.26'
@@ -13,6 +14,19 @@ questionServer = 'http://192.168.122.26'
 #imageServer = 'http://130.245.171.193'
 imageServer1 = 'http://192.168.122.35'
 imageServer2 = 'http://192.168.122.37'
+=======
+#postfixServer = 'http://104.207.133.129'
+#userAccountDB = 'http://149.28.40.50'
+questionServer = 'http://63.209.35.124'
+#questionServer = 'http://127.0.0.1:3000'
+#imageServer = 'http://207.246.85.153'
+#cacheServer = 'http://107.191.41.77'
+#Grading
+postfixServer = 'http://130.245.170.128'
+imageServer = 'http://130.245.170.186'
+userAccountDB = 'http://130.245.170.194'
+
+>>>>>>> 1eb4ae008d2ff9c4e9921e74b77af80e2ff831c1
 app = Flask(__name__, template_folder='./static/build', static_folder='./static/build/static')
 
 

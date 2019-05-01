@@ -3,7 +3,8 @@
   gather_facts: False
   sudo: yes
   vars: 
-    domain: 192.168.122.30
+  domain: 149.28.48.15
+  #  domain: 8.12.18.74
       
   tasks:
   - name: install python setuptools
