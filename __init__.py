@@ -1,36 +1,27 @@
 import io
 from flask import (Flask, send_file, make_response, request, send_from_directory, render_template, jsonify, abort)
 import requests
-import pylibmc
+import random
 #openstack
 #postfixServer = 'http://130.245.171.187'
 #userAccountDB = 'http://130.245.169.94'
 #vulture
-postfixServer = 'http://104.207.133.129'
-userAccountDB = 'http://149.28.40.50'
-questionServer = 'http://63.209.35.124'
+postfixServer = 'http://192.168.122.32'
+userAccountDB = 'http://192.168.122.34'
+questionServer = 'http://192.168.122.26'
 #questionServer = 'http://127.0.0.1:3000'
-imageServer = 'http://130.245.171.193'
-imageServer = 'http://207.148.28.251'
-cacheServer = 'http://107.191.41.77'
+#imageServer = 'http://130.245.171.193'
+imageServer1 = 'http://192.168.122.35'
+imageServer2 = 'http://192.168.122.37'
 app = Flask(__name__, template_folder='./static/build', static_folder='./static/build/static')
-mc = pylibmc.Client(["127.0.0.1"], binary=True,
-                     behaviors={"tcp_nodelay": True,
-                                "ketama": True})
+
 
 def getUserId(sessionId):
-    print(sessionId)
-    if sessionId in mc:
-        print('hit')
-        return mc[sessionId]
+    response = requests.post(userAccountDB+'/getUserId', json={'sessionId':sessionId})
+    if(response.json()['status']=='OK'):
+        return response.json()['userId']
     else:
-        response = requests.post(cacheServer+'/getUserId', json={'sessionId':sessionId})
-        if(response.json()['status']=='OK'):
-            print('miss')
-            mc[sessionId] = response.json()['userId']
-            return response.json()['userId']
-        else:
-            return ''
+        return ''
 
 @app.route("/isLoggedIn", methods=['POST'])
 def isLoggedIn():
@@ -139,6 +130,15 @@ def addQuestion():
     if sessionId is not None:
         user = getUserId(sessionId)
         data['user'] = user
+        #check if media files can be added
+        if ('media' in request.json.keys()):
+            for mediaId in request.json['media']:
+                if random.random() < 0.5:
+                    resp = requests.get(imageServer1 + '/checkMedia', params={'filename': mediaId, 'userId': user})
+                else:
+                    resp = requests.get(imageServer2 + '/checkMedia', params={'filename': mediaId, 'userId': user})
+                if (resp.json()['status'] != 'OK'):
+                    return jsonify({'status': 'error', 'error': 'could not add media'}), 400
     resp = requests.post(getQuestionServerUrl(request), json=data)
     return (resp.text, resp.status_code, resp.headers.items())
 
@@ -160,14 +160,20 @@ def getQuestion(id):
             abort(400)
         media = resp.json()['question']['media']
         for id in media:
-            mediaDeleteResp = requests.post(imageServer + '/delete', json={'filename': id})
+            if random.random() < 0.5:
+                mediaDeleteResp = requests.post(imageServer1 + '/delete', json={'filename': id})
+            else:
+                mediaDeleteResp = requests.post(imageServer2 + '/delete', json={'filename': id})
         print("Question Media Deleted")
         # get all the answers from the question
         answersResp = requests.get(getQuestionServerUrl(request) + '/answers')
         for answer in answersResp.json()['answers']:
             # get and delete media from all the answers
             for id in answer['media']:
-                mediaDeleteResp = requests.post(imageServer + '/delete', json={'filename': id})
+                if random.random() < 0.5:
+                    mediaDeleteResp = requests.post(imageServer1 + '/delete', json={'filename': id})
+                else:
+                    mediaDeleteResp = requests.post(imageServer2 + '/delete', json={'filename': id})
         print("Answer Media Deleted")
         # delete the question from the server    
         resp = requests.delete(getQuestionServerUrl(request), params={ 'user': user})
@@ -183,6 +189,15 @@ def addAnswer(id):
     if sessionId is not None:
         user = getUserId(sessionId)
         data['user'] = user
+        #check if media files can be added
+        if ('media' in request.json.keys()):
+            for mediaId in request.json['media']:
+                if random.random() < 0.5:
+                    resp = requests.get(imageServer1 + '/checkMedia', params={'filename': mediaId, 'userId': user})
+                else:
+                    resp = requests.get(imageServer2 + '/checkMedia', params={'filename': mediaId, 'userId': user})
+                if (resp.json()['status'] != 'OK'):
+                    return jsonify({'status': 'error', 'error': 'could not add media'}), 400
     else:
         abort(400)
     resp = requests.post(getQuestionServerUrl(request), json=data)
@@ -240,17 +255,25 @@ def acceptAnswer(answer_id):
 def addmedia():
     #check logged in
     sessionId = request.cookies.get('sessionId')
-    if(getUserId(sessionId)==''):
+    user = getUserId(sessionId)
+    if(user==''):
         return jsonify({'status':'error', 'error':'User not logged in'}),400
     else:
         filename = 'insert'
-        resp = requests.post(imageServer + '/deposit', files={'contents': request.files['content']},
-                data={'filename':filename})
+        if random.random() < 0.5:
+            resp = requests.post(imageServer1 + '/deposit', files={'contents': request.files['content']},
+                data={'filename':filename, 'userId':user})
+        else:
+            resp = requests.post(imageServer2 + '/deposit', files={'contents': request.files['content']},
+                data={'filename':filename, 'userId':user})
         return (resp.text, resp.status_code, resp.headers.items())
 
 @app.route('/media/<id>', methods=['GET'])
 def getmedia(id):
-    resp = requests.get(imageServer + '/retrieve', params={'filename':id})
+    if random.random() < 0.5:
+        resp = requests.get(imageServer1 + '/retrieve', params={'filename':id})
+    else:
+        resp = requests.get(imageServer2 + '/retrieve', params={'filename':id})
     print(resp.headers.items())
     response = send_file(io.BytesIO(resp.content),
                          attachment_filename=id,
