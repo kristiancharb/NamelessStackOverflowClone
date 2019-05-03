@@ -165,6 +165,12 @@ def getQuestion(id):
         # delete the question from the server    
         resp, media_ids = question_service.get_question_route(id, username)
         print('Media IDs:', media_ids)
+        for id in media_ids:
+            if random.random() < 0.5:
+                mediaDeleteResp = requests.post(imageServer1 + '/delete', json={'filename': id})
+            else:
+                mediaDeleteResp = requests.post(imageServer2 + '/delete', json={'filename': id})
+        
         if resp['status'] == 'OK':
             return jsonify(resp), 200
         else:
@@ -244,8 +250,8 @@ def acceptAnswer(answer_id):
 def addmedia():
     #check logged in
     sessionId = request.cookies.get('sessionId')
-    user = getUserId(sessionId)
-    if(user==''):
+    user = user_service.getUserId(sessionId)
+    if(user==False):
         return jsonify({'status':'error', 'error':'User not logged in'}),400
     else:
         filename = 'insert'
