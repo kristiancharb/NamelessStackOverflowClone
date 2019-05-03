@@ -8,6 +8,7 @@ import Answer from '../components/Answer'
 import SubmitAnswer from '../components/SubmitAnswer'
 import $ from 'jquery';
 import DebugConstants from '../components/DebugConstants'
+import { Button } from '@material-ui/core';
 
 const SearchStyles = theme => ({
     main: {
@@ -105,6 +106,32 @@ class Search extends React.Component {
         this.setState(result);
     }
 
+    upvoteQuestion = (upvote) => {
+        fetch(`/questions/${this.state.question.id}/upvote`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({'upvote': upvote})
+        })
+            .then(res => {
+                if(res.ok) {
+                    res.json()
+                } else {
+                    alert('Error!')
+                    throw new Error()
+                }
+            })
+            .then(
+                (result) => {
+                    this.componentDidMount();
+                },
+                (error) => {
+                    alert('Error!')
+                }
+            );
+    }
     render () {
         console.log(this.state);
         const {classes} = this.props;
@@ -145,12 +172,19 @@ class Search extends React.Component {
                         {this.state.question.body}
                     </Typography>
                     <Typography className={classes.title} color="textSecondary" gutterBottom>
-                        Views: {this.state.question.view_count}
+                        Views: {this.state.question.view_count} <br></br>
+                        Score: {this.state.question.score}
                     </Typography>
                     <Typography className={classes.title} color="textSecondary" gutterBottom>
                         {tags}
                     </Typography>
                     {media}
+                    <Button onClick={() => this.upvoteQuestion(true)}>
+                        Upvote
+                    </Button>
+                    <Button onClick={() => this.upvoteQuestion(false)}>
+                        Downvote
+                    </Button>
                 </Paper>
                 {answers}
             </div>
