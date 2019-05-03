@@ -23,7 +23,7 @@ class QuestionsContainer extends Component {
                 questions:  debug.questions,
             })
         } else {
-            fetch("http://63.209.35.124/search", {
+            fetch("/search", {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',

@@ -26,7 +26,7 @@ def isLoggedIn():
     if user_service.checkIfLoggedIn():
         return jsonify({'status': 'OK'})
     else:
-        return jsonify({'status': 'error'})
+        return jsonify({'status': 'error'}), 400
 
 @app.route("/")
 def hello():
