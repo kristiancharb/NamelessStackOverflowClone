@@ -3,6 +3,9 @@ from datetime import datetime
 from . import questions_db
 import random
 
+def reset():
+    questions_db.reset()
+
 def get_user_route(username):
     user = questions_db.get_reputation(username)
     if user is not None:

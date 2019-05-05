@@ -1,10 +1,10 @@
 ---
-- hosts: hw2
+- hosts: hw1
   gather_facts: False
   sudo: yes
   vars: 
-  #domain: 192.168.122.31
-    domain: 192.168.122.30
+    domain: 192.168.122.31
+    # domain: 192.168.122.30
       
   tasks:
   - name: install python setuptools

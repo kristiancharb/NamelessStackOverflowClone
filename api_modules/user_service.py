@@ -1,6 +1,9 @@
 from flask import (request,abort)
 from . import user_db
 
+def reset():
+    user_db.reset()
+
 def getUserId(sessionId):
     return user_db.getUserId(sessionId)
 

@@ -20,6 +20,12 @@ imageServer1 = 'http://192.168.122.35'
 imageServer2 = 'http://192.168.122.37'
 app = Flask(__name__, template_folder='./static/build', static_folder='./static/build/static')
 
+@app.route("/reset", methods=['GET'])
+def reset():
+    user_service.reset()
+    question_service.reset()
+    return jsonify({'status': 'OK'})
+
 
 @app.route("/isLoggedIn", methods=['POST'])
 def isLoggedIn():
