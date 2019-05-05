@@ -188,14 +188,13 @@ def getQuestion(id):
         print("Answer Media Deleted")
         # delete the question from the server    
         resp, media_ids = question_service.get_question_route(id, username)
-        print('Media IDs:', media_ids)
-        for id in media_ids:
-            if random.random() < 0.5:
-                mediaDeleteResp = requests.post(imageServer1 + '/delete', json={'filename': id})
-            else:
-                mediaDeleteResp = requests.post(imageServer2 + '/delete', json={'filename': id})
-        
         if resp['status'] == 'OK':
+            print('Media IDs:', media_ids)
+            for id in media_ids:
+                if random.random() < 0.5:
+                    mediaDeleteResp = requests.post(imageServer1 + '/delete', json={'filename': id})
+                else:
+                    mediaDeleteResp = requests.post(imageServer2 + '/delete', json={'filename': id})
             return jsonify(resp), 200
         else:
             return jsonify(resp), 400
@@ -293,11 +292,13 @@ def getmedia(id):
         resp = requests.get(imageServer1 + '/retrieve', params={'filename':id})
     else:
         resp = requests.get(imageServer2 + '/retrieve', params={'filename':id})
+    if (resp.status_code == 400):
+        return (resp.content, resp.status_code, resp.headers.items())
     print(resp.headers.items())
     response = send_file(io.BytesIO(resp.content),
                          attachment_filename=id,
                          mimetype='')
-    return response
+    return response, 200
 #    return (resp.content, resp.status_code, resp.headers.items())
 
 

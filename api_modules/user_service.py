@@ -21,7 +21,7 @@ def addUser():
         verificationCode = user_db.createUser(username,password,email)
         print('Verification Code:', verificationCode)
         if(verificationCode==''):
-            return {'status':'ERROR'}
+            return {'status':'error'}
         else:
             return {'status':'OK', 'verificationCode':verificationCode}
     else:
@@ -36,7 +36,7 @@ def verify():
         if(user_db.verifyUser(email, key)):
             return {'status':'OK'}
         else:
-            return {'status':'ERROR', 'message': 'could not verify user'}
+            return {'status':'error', 'error': 'could not verify user'}
     else:
         return {'status':'OK'}
 
@@ -46,7 +46,7 @@ def login():
         password = request.json['password']
         sessionID = user_db.userLogin(username, password)
         if(sessionID==''):
-            return {'status':'ERROR', 'message': 'login failed'}
+            return {'status':'error', 'error': 'login failed'}
         else:
             response = {'status':'OK', 'sessionId':sessionID}
             return response
@@ -57,11 +57,11 @@ def logout():
     if (request.method == 'POST'):
         sessionId = request.cookies.get('sessionId')
         if(sessionId==''):
-            return {'status':'Error', 'error':'User not logged in'}
+            return {'status':'error', 'error':'User not logged in'}
         if(user_db.userLogout(sessionId)):
             return {'status':'OK'}
         else:
-            return {'status':'ERROR', 'message': 'logout failed'}
+            return {'status':'error', 'error': 'logout failed'}
     return {'status':'OK'}
 
 def deleteUser():
@@ -70,7 +70,7 @@ def deleteUser():
         if(user_db.userDeletion(email)):
             return {'status':'OK'}
         else:
-            return {'status':'ERROR'}
+            return {'status':'error'}
     else:
         return {'status':'OK'}
 
