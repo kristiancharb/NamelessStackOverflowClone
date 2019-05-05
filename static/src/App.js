@@ -35,7 +35,7 @@ class App extends Component {
 
     executeLogin(result){
         console.log(result);
-        if(typeof(result.error)!=="undefined") {
+        if(result.status==="error") {
             let ErrorStyled = withStyles(errorStyle)(Error);
             this.setState({error: (<ErrorStyled errorMessage={result.error} />)});
         }else {

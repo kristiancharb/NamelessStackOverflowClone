@@ -21,6 +21,12 @@ imageServer1 = 'http://192.168.122.35'
 imageServer2 = 'http://192.168.122.37'
 app = Flask(__name__, template_folder='./static/build', static_folder='./static/build/static')
 
+@app.route("/reset", methods=['GET'])
+def reset():
+    user_service.reset()
+    question_service.reset()
+    return jsonify({'status': 'OK'})
+
 
 @app.route("/isLoggedIn", methods=['POST'])
 def isLoggedIn():
@@ -107,11 +113,21 @@ def getQuestionServerUrl(request):
 
 @app.route("/user/<username>/questions", methods=['GET'])
 def userQuestions(username):
-    return jsonify(question_service.user_questions_route(username)), 200
+    #check if the user exists
+    response = user_service.userProfile(username)
+    if response['status'] == 'OK':
+        return jsonify(question_service.user_questions_route(username)), 200
+    else:
+        return jsonify(response), 400
 
 @app.route("/user/<username>/answers", methods=['GET'])
 def userAnswers(username):
-    return jsonify(question_service.user_answers_route(username)), 200
+    #check if the user exists
+    response = user_service.userProfile(username)
+    if response['status'] == 'OK':
+        return jsonify(question_service.user_answers_route(username)), 200
+    else:
+        return jsonify(response), 400
 
 @app.route('/questions/add', methods=['POST'])
 def addQuestion():
@@ -173,6 +189,12 @@ def getQuestion(id):
         # delete the question from the server    
         resp, media_ids = question_service.get_question_route(id, username)
         print('Media IDs:', media_ids)
+        for id in media_ids:
+            if random.random() < 0.5:
+                mediaDeleteResp = requests.post(imageServer1 + '/delete', json={'filename': id})
+            else:
+                mediaDeleteResp = requests.post(imageServer2 + '/delete', json={'filename': id})
+        
         if resp['status'] == 'OK':
             return jsonify(resp), 200
         else:
@@ -253,7 +275,7 @@ def addmedia():
     #check logged in
     sessionId = request.cookies.get('sessionId')
     user = user_service.getUserId(sessionId)
-    if not user:
+    if(user==False):
         return jsonify({'status':'error', 'error':'User not logged in'}),400
     else:
         filename = 'insert'

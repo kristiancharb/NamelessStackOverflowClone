@@ -1,2 +1,4 @@
 [hw1]
+192.168.122.31 ansible_ssh_user=ubuntu
+[hw2]
 192.168.122.30 ansible_ssh_user=ubuntu

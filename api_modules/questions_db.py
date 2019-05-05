@@ -14,6 +14,19 @@ collection.create_index([('username', 1)])
 user_collection.create_index([('username', 1)])
 media_collection.create_index([('media_id', 1)])
 
+def reset():
+    client.drop_database('stackoverflow')
+    db = client['stackoverflow']
+    collection = db['questions']
+    user_collection = db['users']
+    media_collection = db['media']
+    session_collection = db['sessions']
+    collection.create_index([('title', pymongo.TEXT), ('body', pymongo.TEXT)], default_language='none')
+    collection.create_index([('username', 1)])
+    user_collection.create_index([('username', 1)])
+    media_collection.create_index([('media_id', 1)])
+
+
 
 def get_reputation(username):
     user = user_collection.find_one({'username': username})

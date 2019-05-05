@@ -6,6 +6,13 @@ db = client['stackoverflow']
 collection = db['users']
 sessionCollection = db['sessions']
 
+def reset():
+    client.drop_database('stackoverflow')
+    db = client['stackoverflow']
+    collection = db['users']
+    sessionCollection = db['sessions']
+    
+
 def createUser(username, password, email):
     verificationCode = str(random.randint(1000000000,9999999999))
     #check if there exists a user or an email
