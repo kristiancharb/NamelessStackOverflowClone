@@ -81,24 +81,27 @@ class SubmitAnswer extends React.Component {
                         let fileData = new FormData(files);
                         let fileCount = 0;
                         let fileIds = [];
-                        for (let pair of fileData.entries()) {
-                            console.log("File: "+ (fileCount++));
-                            console.log(pair[0]+', '+pair[1]);
-                            let tempFileData = new FormData();
-                            tempFileData.append('content', pair[1]); for (let pair of tempFileData.entries()) {
+                        let file = document.getElementById('files');
+                        if (file.files.length != 0) {
+                            for (let pair of fileData.entries()) {
+                                console.log("File: "+ (fileCount++));
                                 console.log(pair[0]+', '+pair[1]);
-                            }
-                            $.ajax({
-                                method: 'POST',
-                                url: '/addmedia',
-                                data: tempFileData,
-                                contentType: false,
-                                processData: false,
-                                async: false,
-                                success: (response) => {console.log(response); console.log(response.id);console.log(response['id']); fileIds.push(response.id); },
-                                error: function ajaxError(jqXHR, textStatus, errorThrown) {
+                                let tempFileData = new FormData();
+                                tempFileData.append('content', pair[1]); for (let pair of tempFileData.entries()) {
+                                    console.log(pair[0]+', '+pair[1]);
                                 }
-                            })
+                                $.ajax({
+                                    method: 'POST',
+                                    url: '/addmedia',
+                                    data: tempFileData,
+                                    contentType: false,
+                                    processData: false,
+                                    async: false,
+                                    success: (response) => {console.log(response); console.log(response.id);console.log(response['id']); fileIds.push(response.id); },
+                                    error: function ajaxError(jqXHR, textStatus, errorThrown) {
+                                    }
+                                })
+                            }
                         }
                         console.log(fileIds)
 
