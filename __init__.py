@@ -7,6 +7,7 @@ elif platform == "darwin":
     from api_modules import user_service, question_service
 import requests
 import random
+from threading import Thread
 #openstack
 #postfixServer = 'http://130.245.171.187'
 #userAccountDB = 'http://130.245.169.94'
@@ -39,12 +40,19 @@ def addUser():
         if(response['status']!='OK'):
             return jsonify({'status':'error', 'error':'Could not add user'}),400
         else:
-            response = requests.post(postfixServer+'/verify', json={
-                'username': request.json['username'],
-                'verificationCode': response['verificationCode'],
-                'email': request.json['email']
+            def send_email(username, code, email):
+                response = requests.post(postfixServer+'/verify', json={
+                    'username': username,
+                    'verificationCode': code,
+                    'email': email
+                })
+            thread = Thread(target=send_email, kwargs={
+                'username': request.json.get('username'),
+                'code': response['verificationCode'],
+                'email': request.json.get('email')
             })
-            return jsonify({'status':response.json()['status']}),201
+            thread.start()
+            return jsonify({'status':'OK'})
     else:
         return jsonify({'status':'OK'})
 
@@ -244,8 +252,8 @@ def acceptAnswer(answer_id):
 def addmedia():
     #check logged in
     sessionId = request.cookies.get('sessionId')
-    user = getUserId(sessionId)
-    if(user==''):
+    user = user_service.getUserId(sessionId)
+    if not user:
         return jsonify({'status':'error', 'error':'User not logged in'}),400
     else:
         filename = 'insert'

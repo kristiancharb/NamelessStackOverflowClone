@@ -130,6 +130,7 @@ def get_all_answers(question_id):
         answer.pop('type')
         answer.pop('upvotes')
         answer.pop('downvotes')
+        answer['user'] = answer.pop('username')
     return answers
 
 def search(timestamp, limit, query, sort_by, tags, has_media, accepted):
