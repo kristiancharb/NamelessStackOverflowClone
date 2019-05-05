@@ -99,11 +99,21 @@ def getQuestionServerUrl(request):
 
 @app.route("/user/<username>/questions", methods=['GET'])
 def userQuestions(username):
-    return jsonify(question_service.user_questions_route(username)), 200
+    #check if the user exists
+    response = user_service.userProfile(username)
+    if response['status'] == 'OK':
+        return jsonify(question_service.user_questions_route(username)), 200
+    else:
+        return jsonify(response), 400
 
 @app.route("/user/<username>/answers", methods=['GET'])
 def userAnswers(username):
-    return jsonify(question_service.user_answers_route(username)), 200
+    #check if the user exists
+    response = user_service.userProfile(username)
+    if response['status'] == 'OK':
+        return jsonify(question_service.user_answers_route(username)), 200
+    else:
+        return jsonify(response), 400
 
 @app.route('/questions/add', methods=['POST'])
 def addQuestion():
