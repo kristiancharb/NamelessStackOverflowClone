@@ -2,9 +2,9 @@ import io
 from flask import (Flask, send_file, make_response, request, send_from_directory, render_template, jsonify, abort)
 from sys import platform
 if platform == "linux" or platform == "linux2":
-    from FlaskApp.api_modules import user_service, question_service
+    from FlaskApp.api_modules import user_service, question_service, imageService
 elif platform == "darwin":
-    from api_modules import user_service, question_service
+    from api_modules import user_service, question_service, imageService
 import requests
 import random
 from threading import Thread
@@ -12,7 +12,7 @@ from threading import Thread
 #postfixServer = 'http://130.245.171.187'
 #userAccountDB = 'http://130.245.169.94'
 #vulture
-postfixServer = 'http://192.168.122.32'
+postfixServer = 'http://192.168.122.42'
 userAccountDB = 'http://192.168.122.34'
 questionServer = 'http://192.168.122.26'
 #questionServer = 'http://127.0.0.1:3000'
@@ -137,10 +137,7 @@ def addQuestion():
         #check if media files can be added
         if ('media' in request.json.keys()):
             for mediaId in request.json['media']:
-                if random.random() < 0.5:
-                    resp = requests.get(imageServer1 + '/checkMedia', params={'filename': mediaId, 'userId': username})
-                else:
-                    resp = requests.get(imageServer2 + '/checkMedia', params={'filename': mediaId, 'userId': username})
+                resp = imageService.checkMedia(mediaId, username)
                 if (resp.json()['status'] != 'OK'):
                     return jsonify({'status': 'error', 'error': 'could not add media'}), 400
         response = question_service.add_question_route(username)
@@ -165,36 +162,12 @@ def getQuestion(id):
         else:
             return jsonify(response), 400
     else:
-        # get all the question media files and delete them
-        # resp = requests.get(getQuestionServerUrl(request), params={ 'user': username})
-        # if resp.status_code != 200:
-        #     abort(400)
-        # media = resp.json()['question']['media']
-        # for id in media:
-        #     if random.random() < 0.5:
-        #         mediaDeleteResp = requests.post(imageServer1 + '/delete', json={'filename': id})
-        #     else:
-        #         mediaDeleteResp = requests.post(imageServer2 + '/delete', json={'filename': id})
-        # print("Question Media Deleted")
-        # # get all the answers from the question
-        # answersResp = requests.get(getQuestionServerUrl(request) + '/answers')
-        # for answer in answersResp.json()['answers']:
-        #     # get and delete media from all the answers
-        #     for id in answer['media']:
-        #         if random.random() < 0.5:
-        #             mediaDeleteResp = requests.post(imageServer1 + '/delete', json={'filename': id})
-        #         else:
-        #             mediaDeleteResp = requests.post(imageServer2 + '/delete', json={'filename': id})
-        print("Answer Media Deleted")
         # delete the question from the server    
         resp, media_ids = question_service.get_question_route(id, username)
         if resp['status'] == 'OK':
             print('Media IDs:', media_ids)
             for id in media_ids:
-                if random.random() < 0.5:
-                    mediaDeleteResp = requests.post(imageServer1 + '/delete', json={'filename': id})
-                else:
-                    mediaDeleteResp = requests.post(imageServer2 + '/delete', json={'filename': id})
+                imageService.delete(id)
             return jsonify(resp), 200
         else:
             return jsonify(resp), 400
@@ -207,10 +180,7 @@ def addAnswer(id):
         #check if media files can be added
         if ('media' in request.json.keys()):
             for mediaId in request.json['media']:
-                if random.random() < 0.5:
-                    resp = requests.get(imageServer1 + '/checkMedia', params={'filename': mediaId, 'userId': user})
-                else:
-                    resp = requests.get(imageServer2 + '/checkMedia', params={'filename': mediaId, 'userId': user})
+                imageService.checkMedia(mediaId, user)
                 if (resp.json()['status'] != 'OK'):
                     return jsonify({'status': 'error', 'error': 'could not add media'}), 400
     else:
@@ -278,20 +248,12 @@ def addmedia():
         return jsonify({'status':'error', 'error':'User not logged in'}),400
     else:
         filename = 'insert'
-        if random.random() < 0.5:
-            resp = requests.post(imageServer1 + '/deposit', files={'contents': request.files['content']},
-                data={'filename':filename, 'userId':user})
-        else:
-            resp = requests.post(imageServer2 + '/deposit', files={'contents': request.files['content']},
-                data={'filename':filename, 'userId':user})
+        resp = imageService.deposit(filename, user, request.files['content'])
         return (resp.text, resp.status_code, resp.headers.items())
 
 @app.route('/media/<id>', methods=['GET'])
 def getmedia(id):
-    if random.random() < 0.5:
-        resp = requests.get(imageServer1 + '/retrieve', params={'filename':id})
-    else:
-        resp = requests.get(imageServer2 + '/retrieve', params={'filename':id})
+    resp = imageService.retrieve(id)
     if (resp.status_code == 400):
         return (resp.content, resp.status_code, resp.headers.items())
     print(resp.headers.items())
