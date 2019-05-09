@@ -12,7 +12,7 @@ from threading import Thread
 #postfixServer = 'http://130.245.171.187'
 #userAccountDB = 'http://130.245.169.94'
 #vulture
-postfixServer = 'http://192.168.122.32'
+postfixServer = 'http://192.168.122.42'
 userAccountDB = 'http://192.168.122.34'
 questionServer = 'http://192.168.122.26'
 #questionServer = 'http://127.0.0.1:3000'
@@ -293,11 +293,13 @@ def getmedia(id):
         resp = requests.get(imageServer1 + '/retrieve', params={'filename':id})
     else:
         resp = requests.get(imageServer2 + '/retrieve', params={'filename':id})
+    if (resp.status_code == 400):
+        return (resp.content, resp.status_code, resp.headers.items())
     print(resp.headers.items())
     response = send_file(io.BytesIO(resp.content),
                          attachment_filename=id,
                          mimetype='')
-    return response
+    return response, 200
 #    return (resp.content, resp.status_code, resp.headers.items())
 
 
