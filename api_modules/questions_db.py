@@ -2,6 +2,7 @@ import pymongo
 from datetime import datetime
 from bson.objectid import ObjectId
 from . import client
+from . import elastic_service
 #client = pymongo.MongoClient("mongodb://localhost:27017/")
 
 db = client['stackoverflow']
@@ -9,7 +10,6 @@ collection = db['questions']
 user_collection = db['users']
 media_collection = db['media']
 session_collection = db['sessions']
-collection.create_index([('title', pymongo.TEXT), ('body', pymongo.TEXT)], default_language='none')
 collection.create_index([('username', 1)])
 user_collection.create_index([('username', 1)])
 media_collection.create_index([('media_id', 1)])
@@ -21,12 +21,10 @@ def reset():
     user_collection = db['users']
     media_collection = db['media']
     session_collection = db['sessions']
-    collection.create_index([('title', pymongo.TEXT), ('body', pymongo.TEXT)], default_language='none')
     collection.create_index([('username', 1)])
     user_collection.create_index([('username', 1)])
     media_collection.create_index([('media_id', 1)])
-
-
+    elastic_service.reset()
 
 def get_reputation(username):
     user = user_collection.find_one({'username': username})
@@ -65,7 +63,7 @@ def add_question(username, title, body, tags, media):
         }))
     if len(media_requests) > 0:
         media_collection.bulk_write(media_requests)
-
+    elastic_service.add_question(str(question['_id']), question['title'], question['body'], question['tags'], len(media) > 0, False)
     return question
 
 def get_question(question_id, username):
@@ -102,6 +100,12 @@ def get_question(question_id, username):
     return question
 
 def add_answer(username, question_id, body, media):
+    try:
+        object_id = ObjectId(question_id)
+        if not collection.find_one({'_id': object_id}):
+            return None
+    except:
+        return None
     media_query = []
     for media_id in media:
         media_query.append({'media_id': media_id})
@@ -158,13 +162,11 @@ def search(timestamp, limit, query, sort_by, tags, has_media, accepted):
     if has_media:
         query_params['media'] = {'$ne': []}
     if query:
-        query_params['$text'] = {'$search': query}
-        questions = list(collection.find(
-            query_params, {
-            'textScore': { '$meta': 'textScore' }
+        ids = [ObjectId(question['_id']) for question in elastic_service.search(query, tags, has_media, accepted)]
+        questions = list(collection.find({
+            '_id': {'$in': ids}
         }).sort([
-            (sort_by, pymongo.DESCENDING),
-            ('textScore', { '$meta': 'textScore' })
+            (sort_by, pymongo.DESCENDING)
         ]).limit(limit))
     else:
         questions = list(collection.find(query_params)
@@ -185,7 +187,6 @@ def search(timestamp, limit, query, sort_by, tags, has_media, accepted):
         question.pop('upvotes')
         question.pop('downvotes')
         question.pop('username')
-        if query: question.pop('textScore')
     return questions
 
 def get_user_questions(username):
@@ -250,6 +251,7 @@ def delete_question(question_id, username):
             collection.bulk_write(requests)
         media_collection.bulk_write(media_requests)
         user_collection.bulk_write(user_requests)
+        elastic_service.delete_question(question_id)
         return media_ids
     else:
         return None
@@ -360,6 +362,8 @@ def accept_answer(answer_id, username):
     except:
         return None
     answer = collection.find_one({'_id' : object_id, 'type': 'answer'})
+    if not answer:
+        return None
     question_id = answer['question_id']
     question = collection.find_one({'_id' : ObjectId(question_id), 'type': 'question'})
     if question['username'] != username or question['accepted_answer_id'] is not None:
@@ -367,6 +371,7 @@ def accept_answer(answer_id, username):
     else:
         collection.update({'_id' : object_id}, {'$set': {'is_accepted': True}})
         collection.update({'_id' : ObjectId(question_id)}, {'$set': {'accepted_answer_id': answer_id}})
+        elastic_service.accept_answer(question_id)
         return True
 
 

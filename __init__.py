@@ -132,8 +132,8 @@ def userAnswers(username):
 @app.route('/questions/add', methods=['POST'])
 def addQuestion():
     sessionId = request.cookies.get('sessionId')
-    if sessionId is not None:
-        username = user_service.getUserId(sessionId)
+    username = user_service.getUserId(sessionId)
+    if username:
         #check if media files can be added
         if ('media' in request.json.keys()):
             for mediaId in request.json['media']:
@@ -188,14 +188,14 @@ def getQuestion(id):
         print("Answer Media Deleted")
         # delete the question from the server    
         resp, media_ids = question_service.get_question_route(id, username)
-        print('Media IDs:', media_ids)
-        for id in media_ids:
-            if random.random() < 0.5:
-                mediaDeleteResp = requests.post(imageServer1 + '/delete', json={'filename': id})
-            else:
-                mediaDeleteResp = requests.post(imageServer2 + '/delete', json={'filename': id})
-        
         if resp['status'] == 'OK':
+            print('Media IDs:', media_ids)
+            for id in media_ids:
+                if random.random() < 0.5:
+                    mediaDeleteResp = requests.post(imageServer1 + '/delete', json={'filename': id})
+                else:
+                    mediaDeleteResp = requests.post(imageServer2 + '/delete', json={'filename': id})
+        
             return jsonify(resp), 200
         else:
             return jsonify(resp), 400
