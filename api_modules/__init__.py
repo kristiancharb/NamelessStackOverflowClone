@@ -1,5 +1,7 @@
 import pymongo
 client = pymongo.MongoClient("192.168.122.39")
+
+#client = pymongo.MongoClient("192.168.122.6") #ben test
 #client = pymongo.MongoClient("127.0.0.1")
 
 #cassandra
@@ -10,6 +12,8 @@ import sys
 import json
 
 cluster = Cluster(['192.168.122.40'], port=9042)
+#cluster = Cluster(['130.245.171.193'], port=9042) #ben test
+
 session = cluster.connect()
 session.execute("CREATE KEYSPACE IF NOT EXISTS hw5 WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 }")
 session.set_keyspace('hw5')
@@ -27,7 +31,7 @@ def writeFile():
     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()
     channel.queue_declare(queue='task_queue', durable=True)
-    print(' [*] Waiting for messages. To exit press CTRL+C')
+    print(' [*] Waiting for messagee. To exit press CTRL+C')
 
     def callback(ch, method, properties, body):
         body = json.loads(body)

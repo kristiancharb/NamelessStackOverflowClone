@@ -25,7 +25,6 @@ def delete(filename):
         return jsonify({"status":"OK"})
 
 def deposit(filename, userId, fileContent):
-    filename=request.form['filename']
     if(filename == 'insert'):
         filename = str(random.randint(1000000000,9999999999))
         #check if this number already exists
@@ -36,7 +35,6 @@ def deposit(filename, userId, fileContent):
     message['mimetype']=fileContent.mimetype
     message['userId'] = userId
 
-    contents=request.files['contents'].read()
     # moving things to the queue
     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()
@@ -66,14 +64,16 @@ def retrieve(filename):
     if(not content):
         return jsonify({"status":"error", "error":"[CASSANDRA SERVER]: file does not exists"}), 400
     for x in content:
-        print("Retrieving: " + x.filename)
-        response = make_response(x.contents)
-        response.headers.set('Content-Type', x.mimetype)
-    return response
+#       print("Retrieving: " + x.filename)
+#       response = make_response(x.contents)
+#       response.headers.set('Content-Type', x.mimetype)
+        response = send_file(io.BytesIO(x.contents),
+                             attachment_filename=id,
+                             mimetype='')
+    return response, 200
 
 # mimetype from database is actually the userId
 # filename is the image id, and the userId is the username of the person uploading the file
-@app.route("/checkMedia", methods=['GET'])
 def checkMedia(filename, userId):
     prepared = session.prepare("SELECT * FROM imgs WHERE filename=?")
     content = session.execute(prepared, (filename,))

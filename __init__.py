@@ -244,23 +244,21 @@ def addmedia():
     #check logged in
     sessionId = request.cookies.get('sessionId')
     user = user_service.getUserId(sessionId)
+    filename = 'insert'
     if(user==False):
         return jsonify({'status':'error', 'error':'User not logged in'}),400
     else:
         filename = 'insert'
         resp = imageService.deposit(filename, user, request.files['content'])
-        return (resp.text, resp.status_code, resp.headers.items())
+        return resp
 
 @app.route('/media/<id>', methods=['GET'])
 def getmedia(id):
     resp = imageService.retrieve(id)
-    if (resp.status_code == 400):
-        return (resp.content, resp.status_code, resp.headers.items())
-    print(resp.headers.items())
-    response = send_file(io.BytesIO(resp.content),
-                         attachment_filename=id,
-                         mimetype='')
-    return response, 200
+#   response = send_file(io.BytesIO(resp.content),
+#                        attachment_filename=id,
+#                        mimetype='')
+    return resp
 #    return (resp.content, resp.status_code, resp.headers.items())
 
 
