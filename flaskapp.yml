@@ -6,6 +6,7 @@
    #domain: 192.168.122.31
    #domain: 192.168.122.30
     domain: 192.168.122.47
+   #domain: 130.245.171.217
       
   tasks:
   - name: install python setuptools
@@ -32,6 +33,13 @@
     pip: name=requests executable=pip3
   - name: install pymongo
     pip: name=pymongo executable=pip3
+  - name: install rabbitmq
+    apt: name=rabbitmq-server update_cache=yes state=latest
+  - name: install pika
+    pip: name=pika executable=pip3
+      version=0.13.0
+  - name: install cassandra-driver
+    pip: name=cassandra-driver executable=pip3
   - name: delete old config
     file:
       path: /etc/apache2/sites-available/000-default.conf
