@@ -83,8 +83,8 @@ def checkMedia(filename, userId):
     for x in content:
         print("Retrieving: " + x.filename)
         if(x.mimetype == userId):
-            return jsonify({"status":"OK"})
+            return True
         else:
-            return jsonify({"status":"error", "error":"User did not upload file"})
+            return False
  
 

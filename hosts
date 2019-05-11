@@ -1,8 +1,8 @@
 [hw1]
-192.168.122.31 ansible_ssh_user=ubuntu
+192.168.122.49 ansible_ssh_user=ubuntu
 [hw2]
-192.168.122.30 ansible_ssh_user=ubuntu
+192.168.122.48 ansible_ssh_user=ubuntu
 [hw3]
-192.168.122.47 ansible_ssh_user=ubuntu
+192.168.122.51 ansible_ssh_user=ubuntu
 [ben]
 130.245.171.217 ansible_ssh_user=ubuntu

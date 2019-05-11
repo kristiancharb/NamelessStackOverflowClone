@@ -137,8 +137,7 @@ def addQuestion():
         #check if media files can be added
         if ('media' in request.json.keys()):
             for mediaId in request.json['media']:
-                resp = imageService.checkMedia(mediaId, username)
-                if (resp.json()['status'] != 'OK'):
+                if (not imageService.checkMedia(mediaId, username)):
                     return jsonify({'status': 'error', 'error': 'could not add media'}), 400
         response = question_service.add_question_route(username)
         if response['status'] == 'OK':
@@ -180,8 +179,7 @@ def addAnswer(id):
         #check if media files can be added
         if ('media' in request.json.keys()):
             for mediaId in request.json['media']:
-                imageService.checkMedia(mediaId, user)
-                if (resp.json()['status'] != 'OK'):
+                if(not imageService.checkMedia(mediaId, user)):
                     return jsonify({'status': 'error', 'error': 'could not add media'}), 400
     else:
         abort(400)

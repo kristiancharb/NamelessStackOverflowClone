@@ -1,11 +1,11 @@
 ---
-- hosts: hw3
+- hosts: hw1
   gather_facts: False
   sudo: yes
   vars: 
-   #domain: 192.168.122.31
-   #domain: 192.168.122.30
-    domain: 192.168.122.47
+    domain: 192.168.122.49
+   #domain: 192.168.122.48
+   #domain: 192.168.122.51
    #domain: 130.245.171.217
       
   tasks:
@@ -29,6 +29,8 @@
     apt: name=python3-pip update_cache=yes state=latest
   - name: install Flask
     pip: name=flask executable=pip3
+  - name: install elasticsearch
+    pip: name=elasticsearch executable=pip3
   - name: install requests
     pip: name=requests executable=pip3
   - name: install pymongo
