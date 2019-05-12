@@ -3,9 +3,11 @@
   gather_facts: False
   sudo: yes
   vars: 
-    domain: 192.168.122.49
+   domain: 192.168.122.49
    #domain: 192.168.122.48
-   #domain: 192.168.122.51
+   #domain: 192.168.122.57
+   #domain: 192.168.122.60
+   #domain: 192.168.122.61
    #domain: 130.245.171.217
       
   tasks:

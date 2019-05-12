@@ -11,7 +11,7 @@ import pika
 import sys
 import json
 
-cluster = Cluster(['192.168.122.40'], port=9042)
+cluster = Cluster(['192.168.122.41'], port=9042)
 #cluster = Cluster(['130.245.171.193'], port=9042) #ben test
 
 session = cluster.connect()

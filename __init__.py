@@ -12,7 +12,7 @@ from threading import Thread
 #postfixServer = 'http://130.245.171.187'
 #userAccountDB = 'http://130.245.169.94'
 #vulture
-postfixServer = 'http://192.168.122.42'
+postfixServer = 'http://192.168.122.56'
 userAccountDB = 'http://192.168.122.34'
 questionServer = 'http://192.168.122.26'
 #questionServer = 'http://127.0.0.1:3000'
