@@ -1,26 +1,34 @@
 import pymongo
 from datetime import datetime
 from bson.objectid import ObjectId
-from . import client
-from . import elastic_service
+from . import client, user_client, elastic_service
 #client = pymongo.MongoClient("mongodb://localhost:27017/")
 
 db = client['stackoverflow']
+user_db = user_client['stackoverflow']
 collection = db['questions']
-user_collection = db['users']
-media_collection = db['media']
-session_collection = db['sessions']
+user_collection = user_db['users']
+media_collection = user_db['media']
+session_collection = user_db['sessions']
 collection.create_index([('username', 1)])
 user_collection.create_index([('username', 1)])
 media_collection.create_index([('media_id', 1)])
 
 def reset():
+    global db
+    global user_db
+    global collection
+    global user_collection
+    global media_collection
+    global session_collection
     client.drop_database('stackoverflow')
+    user_client.drop_database('stackoverflow')
     db = client['stackoverflow']
+    user_db = user_client['stackoverflow']
     collection = db['questions']
-    user_collection = db['users']
-    media_collection = db['media']
-    session_collection = db['sessions']
+    user_collection = user_db['users']
+    media_collection = user_db['media']
+    session_collection = user_db['sessions']
     collection.create_index([('username', 1)])
     user_collection.create_index([('username', 1)])
     media_collection.create_index([('media_id', 1)])

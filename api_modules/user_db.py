@@ -1,14 +1,18 @@
 import pymongo
 import random
-from . import client
+from . import client, user_client
 #client = pymongo.MongoClient("mongodb://localhost:27017/")
-db = client['stackoverflow']
+db = user_client['stackoverflow']
 collection = db['users']
 sessionCollection = db['sessions']
 
 def reset():
+    global db
+    global collection
+    global sessionCollection
     client.drop_database('stackoverflow')
-    db = client['stackoverflow']
+    user_client.drop_database('stackoverflow')
+    db = user_client['stackoverflow']
     collection = db['users']
     sessionCollection = db['sessions']
     

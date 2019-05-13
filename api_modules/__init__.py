@@ -1,5 +1,6 @@
 import pymongo
 client = pymongo.MongoClient("192.168.122.39")
+user_client = pymongo.MongoClient("192.168.122.64")
 
 #client = pymongo.MongoClient("192.168.122.6") #ben test
 #client = pymongo.MongoClient("127.0.0.1")
