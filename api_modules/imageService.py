@@ -80,16 +80,15 @@ def checkMedia(filenames, userId):
     #check if files exist
     files = {}
     for x in content:
-        files['x.filename'] = x
-    for x in filenames:
-        if(x in files):
-            return jsonify({"status":"error", "error":"File does not exist"})
-    #check if userId
-    for x in content:
+        files[x.filename] = x
         print("Retrieving: " + x.filename)
-        if(x.mimetype == userId):
-            return True
-        else:
+        if(x.mimetype != userId):
             return False
+    print('-------------------------FILES-------------------------')
+    print(files.keys())
+    for x in filenames:
+        if(not x in files):
+            return False
+    return True
  
 

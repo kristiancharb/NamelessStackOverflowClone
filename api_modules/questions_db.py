@@ -148,7 +148,13 @@ def add_answer(username, question_id, body, media):
     return answer
 
 def get_all_answers(question_id):
-    answers = list(collection.find({'question_id': question_id}))
+    #get the question
+    question = collection.find_one({'_id' : ObjectId(question_id)})
+    questionAnswers = [ObjectId(id) for id in question['answer_ids']]
+    #get the answers
+    answers = list(collection.find({
+        '_id': {'$in': questionAnswers}
+    }))
     for answer in answers:
         answer['id'] = str(answer.pop('_id'))
         answer.pop('question_id')
@@ -276,10 +282,6 @@ def delete_question(question_id, username):
             }))
             media_ids.extend(answer['media'])
         # collection.delete_many({'type': 'answer', 'question_id': question_id})
-        user_requests.append(pymongo.UpdateMany(
-            {'reputation': {'$lt': 1}},
-            {'$set': {'reputation': 1}}
-        ))
         if len(requests) > 0:
             collection.bulk_write(requests)
         media_collection.bulk_write(media_requests)

@@ -177,9 +177,8 @@ def addAnswer(id):
         user = user_service.getUserId(sessionId)
         #check if media files can be added
         if ('media' in request.json.keys()):
-            for mediaId in request.json['media']:
-                if(not imageService.checkMedia(mediaId, user)):
-                    return jsonify({'status': 'error', 'error': 'could not add media'}), 400
+            if (not imageService.checkMedia(request.json['media'], user)):
+                return jsonify({'status': 'error', 'error': 'could not add media'}), 400
     else:
         abort(400)
     response = question_service.add_answer_route(id, user)
