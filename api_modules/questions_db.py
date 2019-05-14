@@ -180,21 +180,46 @@ def search(timestamp, limit, query, sort_by, tags, has_media, accepted):
         questions = list(collection.find(query_params)
                                    .sort([(sort_by, pymongo.DESCENDING)])
                                    .limit(limit))
-    for question in questions:
+
+    print('--------------------Question---------------')
+    print(questions)
+    print("--------------------count--------------"+str(len(questions)))
+    print('--------------------User---------------')
+    users = [question['username'] for question in questions]
+    print(users)
+    print("--------------------count--------------"+str(len(users)))
+    users = list(user_collection.find({
+        'username': {'$in': users}
+    }))
+    print('--------------------User Info---------------')
+    print(users)
+    print("--------------------count--------------"+str(len(users)))
+    temp = users
+    users = {}
+    for user in temp:
+        users[user['username']]=user
+        
+    for index in range(0, len(questions)):
+        question = questions[index]
         question['view_count'] = len(question.pop('views'))
         question['id'] = str(question.pop('_id'))
         question['answer_count'] = len(question['answer_ids'])
-        question['user'] = user_collection.find_one({'username': question['username']})
-        question['user'].pop('waived_losses')
-        question['user'].pop('_id')
-        question['user'].pop('email')
-        question['user'].pop('password')
-        question['user'].pop('verification_code')
+        question['user'] = users[question['username']]
+        print(index)
+        print(question['user'])
+        if('waived_losses' in question['user']):
+            question['user'].pop('waived_losses')
+            question['user'].pop('_id')
+            question['user'].pop('email')
+            question['user'].pop('password')
+            question['user'].pop('verification_code')
         question.pop('answer_ids')
         question.pop('type')
         question.pop('upvotes')
         question.pop('downvotes')
         question.pop('username')
+        questions[index] = question
+    print(questions)
     return questions
 
 def get_user_questions(username):
