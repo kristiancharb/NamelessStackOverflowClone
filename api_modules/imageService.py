@@ -73,13 +73,18 @@ def retrieve(filename):
     return response, 200
 
 # mimetype from database is actually the userId
-# filename is the image id, and the userId is the username of the person uploading the file
-def checkMedia(filename, userId):
-    prepared = session.prepare("SELECT * FROM imgs WHERE filename=?")
-    content = session.execute(prepared, (filename,))
-    response = ''
-    if(not content):
-        return jsonify({"status":"error", "error":"File does not exist"})
+# filenames is the array image id, and the userId is the username of the person uploading the file
+def checkMedia(filenames, userId):
+    prepared = session.prepare("SELECT * FROM imgs WHERE filename in ?")
+    content = session.execute(prepared, (filenames,))
+    #check if files exist
+    files = {}
+    for x in content:
+        files['x.filename'] = x
+    for x in filenames:
+        if(x in files):
+            return jsonify({"status":"error", "error":"File does not exist"})
+    #check if userId
     for x in content:
         print("Retrieving: " + x.filename)
         if(x.mimetype == userId):
